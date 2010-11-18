@@ -2,6 +2,7 @@
 {
 	import cn.itamt.transform3d.controls.rotation.*;
 	import cn.itamt.transform3d.cursors.RegistrationControlCursor;
+	import cn.itamt.transform3d.events.TransformEvent;
 	import cn.itamt.transform3d.Transform3DMode;
 	import cn.itamt.transform3d.Util;
 	import flash.display.Sprite;
@@ -38,7 +39,7 @@
 				control.mode = _mode;
 			}
 			
-			update();
+			interUpdate();
 		}
 		
 		protected var _ctrls:Array;
@@ -52,9 +53,12 @@
 		protected var _originMX:Matrix3D;
 		//计算出的matrix3d
 		protected var _targetMX:Matrix3D;
-		//
+		//应用在control上的mx
 		protected var _controlMX:Matrix3D;
-		
+		//应用在control上的mx，只包含旋转数据
+		protected var _deltaMx:Matrix3D;
+		//
+		protected var _perspective:Boolean;
 		//目标
 		protected var _target:DisplayObject;
 		public function get target():DisplayObject {
@@ -95,7 +99,7 @@
 		
 			_outReg = _targetMX.transformVector(_interReg);
 			
-			update();
+			interUpdate();
 		}
 		
 		//--------------------------------
@@ -143,8 +147,8 @@
 		//--------public functions--------
 		//--------------------------------
 		
-		protected function update():void {
-			if (_target == null) return;
+		public function update():Boolean {
+			if (_target == null) return false;
 			
 			var pos:Point = _target.local3DToGlobal(_interReg);
 			var pt:Point = this.getProjectionCenter();
@@ -163,17 +167,37 @@
 			updateControls();
 			
 			_root.forceRender();
+			
+			return true;
+		}
+		
+		protected function interUpdate():void {
+			if (this.update()) {
+				this.dispatchEvent(new TransformEvent(TransformEvent.UPDATE));
+			}
 		}
 		
 		protected function updateControls():void {
-			for each(var ctrl:DimentionControl in _ctrls) {
-				if (ctrl == _regCtrl) {
-					_regCtrl.x = _controlMX.position.x;
-					_regCtrl.y = _controlMX.position.y;
-				}else {
-					ctrl.matrix = _controlMX;
+			_deltaMx = _controlMX.clone();
+			var comps:Vector.<Vector3D> = new Vector.<Vector3D>(3);
+			comps[0] = new Vector3D(0, 0, 0, 0)
+			comps[1] = _deltaMx.decompose()[1].clone();
+			comps[2] = new Vector3D(1, 1, 1, 0);
+			_deltaMx.recompose(comps);
+			if(_perspective){
+				for each(var ctrl:DimentionControl in _ctrls) {
+					if (ctrl == _regCtrl) {
+						_regCtrl.x = _controlMX.position.x;
+						_regCtrl.y = _controlMX.position.y;
+					}else {
+						ctrl.matrix = _controlMX;
+					}
 				}
+			}else{
+				_root.x = _controlMX.position.x + this.getProjectionCenter().x;
+				_root.y = _controlMX.position.y + this.getProjectionCenter().y;
 			}
+			
 		}
 
 		//--------------------------------
@@ -202,7 +226,7 @@
 			var pt:Point = new Point(stage.mouseX - _regCtrl.dragOffsetX, stage.mouseY - _regCtrl.dragOffsetY);
 			_interReg = _target.globalToLocal3D(pt);
 			_outReg = _targetMX.transformVector(_interReg);
-			update();
+			interUpdate();
 		}
 		
 		private function onChange(evt:Event):void {
@@ -212,6 +236,7 @@
 			
 			//注册点的改变事件在onChangeReg中处理。
 			if (evt.target == _regCtrl) return;
+			
 			_targetMX = _originMX.clone();
 			
 			this.onChangeControlValue(evt.target as DimentionControl);
@@ -223,8 +248,7 @@
 			}
 			_target.transform.matrix3D = _targetMX;
 			
-			
-			update();
+			interUpdate();
 		}
 		
 		private function onControlActived(evt:Event):void {
@@ -246,7 +270,7 @@
 			evt.preventDefault();
 			
 			this.onDeactiveControl(evt.target as DimentionControl);
-			this.update();
+			this.interUpdate();
 		}
 		
 		protected function onChangeControlValue(ctrl:DimentionControl):void {
@@ -257,7 +281,7 @@
 			for each(var ctrl:DimentionControl in _ctrls) {
 				if (ctrl == _regCtrl) continue;
 				if (!ctrl.actived) {
-					ctrl.alpha = 1;
+					ctrl.alpha = .5;
 				}else {
 					ctrl.alpha = 1;
 				}

@@ -9,7 +9,12 @@ package cn.itamt.transform3d.controls.translation
 	 */
 	public class TranslationDimentionControl extends DimentionControl
 	{
+		
+		protected var _arrowSize:Number = 10;
 		protected var _length:Number = 80;
+		public function get length():Number {
+			return _length;
+		}
 		
 		public function get distance():Number {
 			return _value;

@@ -29,10 +29,10 @@ package cn.itamt.transform3d.controls.translation
 			}else if (_mode == Transform3DMode.INTERNAL) {
 				_sp.graphics3D.lineStyle(_style.borderThickness, _style.borderColor);
 				_sp.graphics3D.moveToSpace(0, 0, 0);
-				_sp.graphics3D.lineToSpace(0, 0, -_length);
+				_sp.graphics3D.lineToSpace(0, 0, _length);
 				_sp.graphics3D.lineStyle(4, _style.borderColor, 0);
 				_sp.graphics3D.moveToSpace(0, 0, 0);
-				_sp.graphics3D.lineToSpace(0, 0, -_length);
+				_sp.graphics3D.lineToSpace(0, 0, _length);
 				
 				//_sp.graphics3D.moveTo(0, 0);
 				//_sp.graphics3D.lineTo(0, -_length);

@@ -23,17 +23,17 @@ package cn.itamt.transform3d.controls.translation
 			if(_mode == Transform3DMode.GLOBAL){
 				_sp.graphics3D.lineStyle(_style.borderThickness, _style.borderColor);
 				_sp.graphics3D.moveTo(0, 0);
-				_sp.graphics3D.lineTo(0, -this._length);
+				_sp.graphics3D.lineTo(0, this._length);
 				_sp.graphics3D.lineStyle(4, _style.borderColor, 0);
 				_sp.graphics3D.moveTo(0, 0);
-				_sp.graphics3D.lineTo(0, -this._length);
+				_sp.graphics3D.lineTo(0, this._length);
 			}else if (_mode == Transform3DMode.INTERNAL) {
 				_sp.graphics3D.lineStyle(_style.borderThickness, _style.borderColor);
 				_sp.graphics3D.moveTo(0, 0);
-				_sp.graphics3D.lineTo(0, -this._length);
+				_sp.graphics3D.lineTo(0, this._length);
 				_sp.graphics3D.lineStyle(4, _style.borderColor, 0);
 				_sp.graphics3D.moveTo(0, 0);
-				_sp.graphics3D.lineTo(0, -this._length);
+				_sp.graphics3D.lineTo(0, this._length);
 			}
 			
 		}

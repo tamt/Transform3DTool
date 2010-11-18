@@ -1,6 +1,8 @@
 package cn.itamt.transform3d.controls.translation 
 {
 	import cn.itamt.transform3d.Transform3DMode;
+	import cn.itamt.transform3d.Util;
+	import flash.geom.Matrix3D;
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
 	/**
@@ -14,6 +16,7 @@ package cn.itamt.transform3d.controls.translation
 		{
 			super();
 			_style.borderColor = 0xff0000;
+			_arrowSize = 20;
 		}
 		
 		protected override function draw():void {
@@ -50,6 +53,11 @@ package cn.itamt.transform3d.controls.translation
 				_textfield.x = pos.x - _textfield.width / 2;
 				_textfield.y = pos.y - _textfield.height / 2;
 			}
+		}
+		
+		public override function set matrix(value:Matrix3D):void {
+			super.matrix = value;
+			draw();
 		}
 	}
 

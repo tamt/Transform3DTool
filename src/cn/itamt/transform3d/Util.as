@@ -4,6 +4,7 @@ package cn.itamt.transform3d
 	import flash.display.Graphics;
 	import flash.display.Stage;
 	import flash.geom.Matrix3D;
+	import flash.geom.Point;
 	import flash.geom.Vector3D;
 	import net.badimon.five3D.display.Graphics3D;
 	/**
@@ -170,6 +171,16 @@ package cn.itamt.transform3d
 			var a:Number = Math.atan2(vt.y, vt.x);
 			
 			return a * Util.RADIAN;
+		}
+		
+		/**
+		 * 某对象的3d点映射到目标对象的坐标
+		 * @param	vt
+		 * @param	displayObject
+		 * @return
+		 */
+		public static function local3DToTarget(local:DisplayObject, vt:Vector3D, target:DisplayObject):Point {
+			return target.globalToLocal(local.local3DToGlobal(vt));
 		}
 		
 	}

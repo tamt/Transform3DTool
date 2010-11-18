@@ -6,6 +6,7 @@ package cn.itamt.transform3d
 	import cn.itamt.transform3d.controls.translation.XTranslationControl;
 	import cn.itamt.transform3d.controls.translation.YTranslationControl;
 	import cn.itamt.transform3d.cursors.*;
+	import cn.itamt.transform3d.events.TransformEvent;
 	import flash.display.*;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -27,7 +28,6 @@ package cn.itamt.transform3d
 		
 		public var test:MovieClip;
 		public var mode:TextField;
-		public var tool:TextField;
 		
 		var rotationTool:RotationTool;
 		var translationTool:TranslationTool;
@@ -44,24 +44,30 @@ package cn.itamt.transform3d
 			
 			CustomMouseCursor.init(this.stage);
 			
-			test.rotationX = test.rotationY = test.rotationZ = 45;
+			test.rotationX = test.rotationY = test.rotationZ = 20;
 			
 			rotationTool = new RotationTool();
 			addChild(rotationTool);
 			rotationTool.target = test;
+			rotationTool.addEventListener(TransformEvent.UPDATE, onRotate);
 			
 			translationTool = new TranslationTool();
 			addChild(translationTool);
-			translationTool.target = null;
+			translationTool.target = test;
+			translationTool.addEventListener(TransformEvent.UPDATE, onTranslate);
 			
 			//改变模式
 			mode.text = Transform3DMode.toString(rotationTool.mode);
 			mode.addEventListener(MouseEvent.CLICK, onClickMode);
 			
-			//工具选择
-			tool.text = "rotation";
-			tool.addEventListener(MouseEvent.CLICK, onClickTool);
-				
+		}
+		
+		private function onRotate(evt:Event):void {
+			translationTool.update();
+		}
+		
+		private function onTranslate(evt:Event):void {
+			rotationTool.update();
 		}
 		
 		private function onClickMode(evt:MouseEvent):void {
@@ -72,18 +78,6 @@ package cn.itamt.transform3d
 			}
 			
 			mode.text = Transform3DMode.toString(rotationTool.mode);
-		}
-		
-		private function onClickTool(evt:MouseEvent):void {
-			if (rotationTool.target == test) {
-				rotationTool.target = null;
-				translationTool.target = test;
-				tool.text = "translation";
-			}else {
-				rotationTool.target = test;
-				translationTool.target = null;
-				tool.text = "rotation";	
-			}
 		}
 		
 	}

@@ -47,6 +47,8 @@ package cn.itamt.transform3d
 		}
 		
 		public function RotationTool():void {
+			_perspective = false;
+			
 			super();
 		}
 		
@@ -182,23 +184,12 @@ package cn.itamt.transform3d
 		}
 		
 		protected override function updateControls():void {
-			var deltaMx:Matrix3D = _controlMX.clone();
-			var rotations:Vector3D = deltaMx.decompose()[1];
-			var comps:Vector.<Vector3D> = new Vector.<Vector3D>(3);
-			comps[0] = new Vector3D(0, 0, 0, 0)
-			comps[1] = rotations;
-			comps[2] = new Vector3D(1, 1, 1, 0);
-			deltaMx.recompose(comps);
-			
-			_root.x = _controlMX.position.x + this.getProjectionCenter().x;
-			_root.y = _controlMX.position.y + this.getProjectionCenter().y;
+			super.updateControls();
 			
 			for each(var ctrl:DimentionControl in _ctrls) {
 				if (ctrl == _regCtrl || ctrl == _pCtrl) {
-					//ctrl.x = _controlMX.position.x;
-					//ctrl.y = _controlMX.position.y;
 				}else {
-					ctrl.matrix = deltaMx;
+					ctrl.matrix = _deltaMx;
 				}
 			}
 			
@@ -209,7 +200,7 @@ package cn.itamt.transform3d
 			this._maskContainer.y = _root.y;
 			
 			var tolerance:Number = 1;
-			var crv:Vector3D = rotations;
+			var crv:Vector3D = _deltaMx.decompose()[1];
 			
 			//_xCtrl
 			var rz:Number = (Util.projectRotationZ(_xCtrl.matrix));
