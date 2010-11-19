@@ -19,6 +19,7 @@
 	public class TransformControl extends Sprite
 	{
 		protected var _root:Scene3D;
+		protected var _skinContainer:Sprite;
 		protected var _inited:Boolean = false;
 		
 		//修改注册点的Control
@@ -43,7 +44,6 @@
 		}
 		
 		protected var _ctrls:Array;
-		
 		//注册点在target内部的坐标
 		protected var _interReg:Vector3D;
 		//注册点在target外部的坐标
@@ -109,6 +109,9 @@
 		{	
 			_root = new Scene3D();
 			addChild(_root);
+			
+			_skinContainer = new Sprite();
+			addChildAt(_skinContainer, 0);
 			
 			if (stage) onAdded();
 			else addEventListener(Event.ADDED_TO_STAGE, onAdded);
@@ -195,7 +198,10 @@
 				}
 			}else{
 				_root.x = _controlMX.position.x + this.getProjectionCenter().x;
-				_root.y = _controlMX.position.y + this.getProjectionCenter().y;
+				_root.y = _controlMX.position.y + this.getProjectionCenter().y;				
+			
+				_skinContainer.x = _root.x;
+				_skinContainer.y = _root.y;
 			}
 			
 		}

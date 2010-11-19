@@ -66,9 +66,23 @@ package cn.itamt.transform3d.controls
 			_mode = val;
 			
 			if(_inited){
-				//TODO:根据不通模式，绘制不通的UI
 				clear();
 				draw();
+			}
+		}
+		
+		//skin
+		protected var _skin:DisplayObject;
+		public function get skin():DisplayObject {
+			return _skin;
+		}
+		public function set skin(val:DisplayObject):void {
+			if (_skin) {
+				clearListenersToSkin();
+			}
+			_skin = val;
+			if (_skin) {
+				buildListenersToSkin();
 			}
 		}
 		
@@ -105,6 +119,8 @@ package cn.itamt.transform3d.controls
 			this.addEventListener(MouseEvent.ROLL_OUT, onRollOut);
 			this.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 			
+			if (_skin) this.buildListenersToSkin();
+			
 			_mousePoint = new Point(mouseX, mouseY);
 			_mousePoint3D = _sp.mouseXY;
 			_globalMousePoint = new Point(stage.mouseX, stage.mouseY);
@@ -129,6 +145,8 @@ package cn.itamt.transform3d.controls
 				this.stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 				this.stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 			}
+			
+			if (_skin) this.clearListenersToSkin();
 		}
 		
 		/**
@@ -219,6 +237,35 @@ package cn.itamt.transform3d.controls
 			}
 		}
 		
+		protected function buildListenersToSkin():void {
+			_skin.addEventListener(MouseEvent.ROLL_OVER, onRollSkinOver);
+			_skin.addEventListener(MouseEvent.ROLL_OUT, onRollSkinOut);
+			_skin.addEventListener(MouseEvent.MOUSE_DOWN, onSkinMouseDown);
+		}
+		
+		protected function clearListenersToSkin():void {
+			_skin.removeEventListener(MouseEvent.ROLL_OVER, onRollSkinOver);
+			_skin.removeEventListener(MouseEvent.ROLL_OUT, onRollSkinOut);
+			_skin.removeEventListener(MouseEvent.MOUSE_DOWN, onSkinMouseDown);
+		}
+		
+		private function onRollSkinOver(evt:MouseEvent = null):void {
+			evt.stopImmediatePropagation();
+			evt.preventDefault();
+			this.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OVER, true));
+		}
+		
+		private function onRollSkinOut(evt:MouseEvent = null):void {
+			evt.stopImmediatePropagation();
+			evt.preventDefault();
+			this.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OUT, true));
+		}
+		
+		private function onSkinMouseDown(evt:MouseEvent = null):void {
+			evt.stopImmediatePropagation();
+			evt.preventDefault();
+			this.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_DOWN, true));
+		}
 		//------------------------------
 		//------protected functions-----
 		//------------------------------

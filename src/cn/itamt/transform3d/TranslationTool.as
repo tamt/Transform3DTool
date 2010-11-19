@@ -3,7 +3,9 @@ package cn.itamt.transform3d
 	import cn.itamt.transform3d.controls.*;
 	import cn.itamt.transform3d.cursors.*;
 	import cn.itamt.transform3d.controls.translation.*;
+	import cn.itamt.transform3d.skins.ITranslationDimentionSkin;
 	import cn.itamt.transform3d.skins.TranslationDimentionSkin;
+	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.geom.Matrix3D;
@@ -21,10 +23,9 @@ package cn.itamt.transform3d
 		protected var _yCtrl:YTranslationControl;
 		protected var _zCtrl:ZTranslationControl;
 		
-		protected var _xSkin:TranslationDimentionSkin;
-		protected var _ySkin:TranslationDimentionSkin;
-		protected var _zSkin:TranslationDimentionSkin;
-		protected var _skinContainer:Sprite;
+		protected var _xSkin:DisplayObject;
+		protected var _ySkin:DisplayObject;
+		protected var _zSkin:DisplayObject;
 		
 		public function TranslationTool() 
 		{
@@ -47,12 +48,18 @@ package cn.itamt.transform3d
 			
 			super.onAdded(evt);
 			
-			_skinContainer = new Sprite();
-			addChild(_skinContainer);
+			if(_xSkin == null)_xSkin = new TranslationDimentionSkin(_xCtrl.style.borderColor);
+			if(_ySkin == null)_ySkin = new TranslationDimentionSkin(_yCtrl.style.borderColor);
+			if(_zSkin == null)_zSkin = new TranslationDimentionSkin(_zCtrl.style.borderColor);
 			
-			_xSkin = new TranslationDimentionSkin(_xCtrl.style.borderColor, 0);
-			_ySkin = new TranslationDimentionSkin(_yCtrl.style.borderColor, 0);
-			_zSkin = new TranslationDimentionSkin(_zCtrl.style.borderColor, 0);
+			_xCtrl.skin = _xSkin;
+			_yCtrl.skin = _ySkin;
+			_zCtrl.skin = _zSkin;
+			
+			_xCtrl.visible = false;
+			_yCtrl.visible = false;
+			_zCtrl.visible = false;
+			
 			_skinContainer.addChild(_xSkin);
 			_skinContainer.addChild(_ySkin);
 			_skinContainer.addChild(_zSkin);
@@ -93,29 +100,28 @@ package cn.itamt.transform3d
 				}
 			}
 			
-			_skinContainer.x = _root.x;
-			_skinContainer.y = _root.y;
-			
 			var rotations:Vector3D = _deltaMx.decompose(Orientation3D.AXIS_ANGLE)[1];
-			//trace(rotations.x, rotations.y, rotations.z, rotations.w);
 			
 			var pos:Vector3D = _xCtrl.matrix.transformVector(new Vector3D(_xCtrl.length, 0, 0));
 			var r:Number = Util.projectRotationX(_deltaMx);
 			_xSkin.rotation = r;
-			_xSkin.x = pos.x;
-			_xSkin.y = pos.y;
+			//_xSkin.x = pos.x;
+			//_xSkin.y = pos.y;
+			if(_xSkin is ITranslationDimentionSkin)(_xSkin as ITranslationDimentionSkin).length = Math.sqrt(pos.x * pos.x + pos.y * pos.y);
 			
 			pos = _xCtrl.matrix.transformVector(new Vector3D(0, _yCtrl.length, 0));
 			r = Util.projectRotationY(_deltaMx);
 			_ySkin.rotation = r;
-			_ySkin.x = pos.x;
-			_ySkin.y = pos.y;
+			//_ySkin.x = pos.x;
+			//_ySkin.y = pos.y;
+			if(_ySkin is ITranslationDimentionSkin)(_ySkin as ITranslationDimentionSkin).length = Math.sqrt(pos.x * pos.x + pos.y * pos.y);
 			
 			pos = _xCtrl.matrix.transformVector(new Vector3D(0, 0, _zCtrl.length));
 			r = Util.projectRotationZ(_deltaMx);
 			_zSkin.rotation = r;
-			_zSkin.x = pos.x;
-			_zSkin.y = pos.y;
+			//_zSkin.x = pos.x;
+			//_zSkin.y = pos.y;
+			if(_zSkin is ITranslationDimentionSkin)(_zSkin as ITranslationDimentionSkin).length = Math.sqrt(pos.x * pos.x + pos.y * pos.y);
 		}
 		
 		//

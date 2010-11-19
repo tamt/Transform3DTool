@@ -2,6 +2,9 @@ package cn.itamt.transform3d.controls.translation
 {
 	import cn.itamt.transform3d.Transform3DMode;
 	import flash.geom.Point;
+	import cn.itamt.transform3d.Util;
+	import net.badimon.five3D.display.Scene3D;
+	import net.badimon.five3D.utils.InternalUtils;
 	/**
 	 * ...
 	 * @author tamt
@@ -39,13 +42,20 @@ package cn.itamt.transform3d.controls.translation
 		}
 		
 		override protected function onDraging():void {
-			_value = _globalMousePoint.y - _globalStartDragPoint.y;
+			var root:Scene3D = InternalUtils.getScene(this);
+			_globalMousePoint = new Point(root.mouseX, root.mouseY);
+			
+			var pt:Point = _globalMousePoint.subtract(_globalStartDragPoint);
+			var b:Number = Math.atan2(pt.y, pt.x);
+			var a:Number = Util.projectRotationY(this.matrix) / Util.RADIAN;
+			var a:Number = a - b;
+			_value = Math.cos(a)*(Math.sqrt(pt.x * pt.x + pt.y * pt.y));
 			
 			//显示度数
 			if (showValue) {
 				if (!_textfield.visible)_textfield.visible = true;
 				_textfield.text = Math.round(_value).toString();
-				var pos:Point = Point.interpolate(_globalStartDragPoint, _globalMousePoint, .5);
+				var pos:Point = Point.interpolate(_globalStartDragPoint, _mousePoint, .5);
 				_textfield.x = pos.x - _textfield.width / 2;
 				_textfield.y = pos.y - _textfield.height / 2;
 			}

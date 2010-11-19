@@ -6,7 +6,7 @@ package cn.itamt.transform3d.skins
 	 * ...
 	 * @author tamt
 	 */
-	public class TranslationDimentionSkin extends DimentionSkin
+	public class TranslationDimentionSkin extends DimentionSkin implements ITranslationDimentionSkin
 	{
 		
 		private var _length:Number = 50;
@@ -34,7 +34,7 @@ package cn.itamt.transform3d.skins
 		
 		public function TranslationDimentionSkin(color:uint, length:Number = 50, arrowWidth:Number = 15, arrowHeight:Number = 12) 
 		{
-			_style = new Style(color, .5, color, 1, 1);
+			_style = new Style(color, .5, color, 1, 2);
 			this._length = length;
 			this._arrowWidth = arrowWidth;
 			this._arrowHeight = arrowHeight;
@@ -62,9 +62,8 @@ package cn.itamt.transform3d.skins
 			var fx:Number = _arrowWidth - a;
 			var fy:Number = b;
 			
+			//绘制箭头
 			graphics.beginFill(_style.borderColor, _style.borderAlpha);
-			graphics.moveTo(0, 0);
-			graphics.lineTo(this.length, 0);
 			graphics.moveTo(this._length + _arrowWidth, 0);
 			graphics.lineTo(this._length + a, fy);
 			graphics.lineTo(this._length + a, -fy);
@@ -73,6 +72,15 @@ package cn.itamt.transform3d.skins
 			graphics.beginFill(_style.borderColor, 1);
 			graphics.drawEllipse(this._length - radius, -radius, _arrowHeight, _arrowHeight);
 			graphics.endFill();
+			
+			//绘制线
+			graphics.lineStyle(_style.borderThickness, _style.borderColor, _style.borderAlpha);
+			graphics.moveTo(0, 0);
+			graphics.lineTo(this.length, 0);
+			
+			graphics.lineStyle(4, _style.borderColor, 0);
+			graphics.moveTo(0, 0);
+			graphics.lineTo(this.length, 0);
 			
 		}
 		
