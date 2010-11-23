@@ -3,6 +3,7 @@ package cn.itamt.transform3d
 	import cn.itamt.transform3d.controls.Control;
 	import cn.itamt.transform3d.controls.rotation.*;
 	import cn.itamt.transform3d.controls.TransformControl;
+	import cn.itamt.transform3d.controls.translation.GlobalTranslationControl;
 	import cn.itamt.transform3d.controls.translation.XTranslationControl;
 	import cn.itamt.transform3d.controls.translation.YTranslationControl;
 	import cn.itamt.transform3d.cursors.*;
@@ -25,12 +26,13 @@ package cn.itamt.transform3d
 	 */
 	public class Main extends Sprite 
 	{
-		
-		public var test:MovieClip;
 		public var mode:TextField;
+		public var test:MovieClip;
 		
-		var rotationTool:RotationTool;
-		var translationTool:TranslationTool;
+		private var tool3d:Transform3DTool
+		private var tTool:TranslationTool;
+		private var rTool:RotationTool;
+		private var gTool:GlobalTranslationTool;
 		
 		public function Main():void 
 		{
@@ -46,40 +48,58 @@ package cn.itamt.transform3d
 			
 			test.rotationX = test.rotationY = test.rotationZ = 20;
 			
-			rotationTool = new RotationTool();
-			addChild(rotationTool);
-			rotationTool.target = test;
-			rotationTool.addEventListener(TransformEvent.UPDATE, onRotate);
+			tool3d = new Transform3DTool();
+			addChild(tool3d);
 			
-			translationTool = new TranslationTool();
-			addChild(translationTool);
-			translationTool.target = test;
-			translationTool.addEventListener(TransformEvent.UPDATE, onTranslate);
+			//tTool = new TranslationTool();
+			//addChild(tTool);
 			
-			//改变模式
-			mode.text = Transform3DMode.toString(rotationTool.mode);
-			mode.addEventListener(MouseEvent.CLICK, onClickMode);
+			//rTool = new RotationTool();
+			//addChild(rTool);
 			
+			//gTool = new GlobalTranslationTool();
+			//addChild(gTool);
+			
+			this.stage.addEventListener(MouseEvent.MOUSE_DOWN, onClickSth);
 		}
 		
-		private function onRotate(evt:Event):void {
-			translationTool.update();
-		}
-		
-		private function onTranslate(evt:Event):void {
-			rotationTool.update();
-		}
-		
-		private function onClickMode(evt:MouseEvent):void {
-			if (rotationTool.mode == Transform3DMode.INTERNAL) {
-				translationTool.mode = rotationTool.mode = Transform3DMode.GLOBAL;
-			}else {
-				translationTool.mode = rotationTool.mode = Transform3DMode.INTERNAL;
+		private function onClickSth(evt:MouseEvent):void {
+			
+			if(tool3d){
+				if (evt.target is DisplayObject) {
+					if(evt.target is Stage){
+						tool3d.target = null;
+						return;
+					}
+					tool3d.target = evt.target as DisplayObject;
+				}
 			}
 			
-			mode.text = Transform3DMode.toString(rotationTool.mode);
+			if(tTool){
+				if (evt.target is MovieClip) {
+					tTool.target = evt.target as MovieClip;
+				}else if(evt.target is Stage){
+					tTool.target = null;
+				}
+			}
+			
+			if(rTool){
+				if (evt.target is MovieClip) {
+					rTool.target = evt.target as MovieClip;
+				}else if(evt.target is Stage){
+					rTool.target = null;
+				}
+			}
+			
+			if (gTool) {
+				if (evt.target is MovieClip) {
+					gTool.target = evt.target as MovieClip;
+				}else if(evt.target is Stage){
+					gTool.target = null;
+				}
+			}
 		}
-		
+				
 	}
 	
 }

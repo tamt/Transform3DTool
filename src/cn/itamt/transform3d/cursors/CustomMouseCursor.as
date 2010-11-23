@@ -47,14 +47,14 @@ package cn.itamt.transform3d.cursors
 				}
 			}else{			
 				_defaultCursor = Mouse.cursor;
-				if (_cursor) {
+				
+				if (_cursor && _cursor!=cursor) {
 					_stage.removeChild(_cursor);
-					_cursor = cursor;
-				}else if(_cursor != cursor){
-					_cursor = cursor;
-					_stage.addChild(_cursor);
-					startTrackMouse();
 				}
+				
+				_cursor = cursor;
+				_stage.addChild(_cursor);
+				startTrackMouse();
 			}
 			
 			if (_cursor)_cursor.visible = true;

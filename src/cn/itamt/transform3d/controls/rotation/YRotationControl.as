@@ -16,8 +16,8 @@ package cn.itamt.transform3d.controls.rotation
 		public function YRotationControl() 
 		{
 			super();
-			_wedgeStyle.fillColor = 0x00cc00;
-			_style.borderColor = 0x00cc00;
+			_wedgeStyle.fillColor = 0x00ff00;
+			_style.borderColor = 0x00ff00;
 		}
 		
 		protected override function draw():void {
@@ -33,9 +33,9 @@ package cn.itamt.transform3d.controls.rotation
 				_sp.graphics3D.moveTo(-this._radius, 0);
 				_sp.graphics3D.lineTo(this._radius, 0);
 			}else if (_mode == Transform3DMode.INTERNAL) {
-				_sp.graphics3D.lineStyle(_style.borderThickness, _style.borderColor);
-				_sp.graphics3D.drawCircle(0, 0, _radius);
 				_sp.graphics3D.lineStyle(4, _style.borderColor, 0);
+				_sp.graphics3D.drawCircle(0, 0, _radius);
+				_sp.graphics3D.lineStyle(_style.borderThickness, _style.borderColor);
 				_sp.graphics3D.drawCircle(0, 0, _radius);
 			}
 			

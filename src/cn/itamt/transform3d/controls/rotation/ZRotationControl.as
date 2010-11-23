@@ -22,9 +22,9 @@ package cn.itamt.transform3d.controls.rotation
 			
 			_sp.graphics3D.clear();
 			
-			_sp.graphics3D.lineStyle(_style.borderThickness, _style.borderColor);
-			_sp.graphics3D.drawCircle(0, 0, _radius);
 			_sp.graphics3D.lineStyle(4, _style.borderColor, 0);
+			_sp.graphics3D.drawCircle(0, 0, _radius);
+			_sp.graphics3D.lineStyle(_style.borderThickness, _style.borderColor);
 			_sp.graphics3D.drawCircle(0, 0, _radius);
 			/*
 			if(_mode == Transform3DMode.GLOBAL){

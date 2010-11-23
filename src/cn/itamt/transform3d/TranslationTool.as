@@ -46,8 +46,6 @@ package cn.itamt.transform3d
 			_root.addChild(_yCtrl);
 			_root.addChild(_zCtrl);
 			
-			super.onAdded(evt);
-			
 			if(_xSkin == null)_xSkin = new TranslationDimentionSkin(_xCtrl.style.borderColor);
 			if(_ySkin == null)_ySkin = new TranslationDimentionSkin(_yCtrl.style.borderColor);
 			if(_zSkin == null)_zSkin = new TranslationDimentionSkin(_zCtrl.style.borderColor);
@@ -59,6 +57,8 @@ package cn.itamt.transform3d
 			_xCtrl.visible = false;
 			_yCtrl.visible = false;
 			_zCtrl.visible = false;
+			
+			super.onAdded(evt);
 			
 			_skinContainer.addChild(_xSkin);
 			_skinContainer.addChild(_ySkin);
@@ -83,10 +83,19 @@ package cn.itamt.transform3d
 		//-------------------------------------
 		//-------------------------------------
 		protected override function onChangeControlValue(ctrl:DimentionControl):void {
-			if(_mode == Transform3DMode.INTERNAL){
-				_targetMX.prependTranslation(_xCtrl.distance, _yCtrl.distance, _zCtrl.distance);
+			var focalLen:Number = _target.root.transform.perspectiveProjection.focalLength;
+			var ratio:Number = Math.sin(_target.root.transform.perspectiveProjection.fieldOfView * .5 / Util.RADIAN);
+			var pos:Vector3D = _target.transform.matrix3D.position;
+			ratio *= (focalLen + pos.z)/focalLen;
+			
+			var xdist:Number = (_xCtrl.distance * ratio);
+			var ydist:Number = (_yCtrl.distance * ratio);
+			var zdist:Number = (_zCtrl.distance * ratio);
+			
+			if (_mode == Transform3DMode.INTERNAL) {
+				_targetMX.prependTranslation(xdist, ydist, zdist);
 			}else if (_mode == Transform3DMode.GLOBAL) {
-				_targetMX.appendTranslation(_xCtrl.distance, _yCtrl.distance, _zCtrl.distance);
+				_targetMX.appendTranslation(xdist, ydist, zdist);
 			}
 		}
 		
@@ -102,31 +111,20 @@ package cn.itamt.transform3d
 			
 			var rotations:Vector3D = _deltaMx.decompose(Orientation3D.AXIS_ANGLE)[1];
 			
-			var pos:Vector3D = _xCtrl.matrix.transformVector(new Vector3D(_xCtrl.length, 0, 0));
+			var pos:Vector3D = _deltaMx.transformVector(new Vector3D(_xCtrl.length, 0, 0));
 			var r:Number = Util.projectRotationX(_deltaMx);
 			_xSkin.rotation = r;
-			//_xSkin.x = pos.x;
-			//_xSkin.y = pos.y;
 			if(_xSkin is ITranslationDimentionSkin)(_xSkin as ITranslationDimentionSkin).length = Math.sqrt(pos.x * pos.x + pos.y * pos.y);
 			
-			pos = _xCtrl.matrix.transformVector(new Vector3D(0, _yCtrl.length, 0));
+			pos = _deltaMx.transformVector(new Vector3D(0, _yCtrl.length, 0));
 			r = Util.projectRotationY(_deltaMx);
 			_ySkin.rotation = r;
-			//_ySkin.x = pos.x;
-			//_ySkin.y = pos.y;
 			if(_ySkin is ITranslationDimentionSkin)(_ySkin as ITranslationDimentionSkin).length = Math.sqrt(pos.x * pos.x + pos.y * pos.y);
 			
-			pos = _xCtrl.matrix.transformVector(new Vector3D(0, 0, _zCtrl.length));
+			pos = _deltaMx.transformVector(new Vector3D(0, 0, _zCtrl.length));
 			r = Util.projectRotationZ(_deltaMx);
 			_zSkin.rotation = r;
-			//_zSkin.x = pos.x;
-			//_zSkin.y = pos.y;
 			if(_zSkin is ITranslationDimentionSkin)(_zSkin as ITranslationDimentionSkin).length = Math.sqrt(pos.x * pos.x + pos.y * pos.y);
-		}
-		
-		//
-		protected function buildSkin():void {
-			//绘制箭头
 		}
 		
 	}

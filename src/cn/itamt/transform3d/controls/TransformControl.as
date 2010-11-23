@@ -16,7 +16,7 @@
 	 * ...
 	 * @author tamt
 	 */
-	public class TransformControl extends Sprite
+	public class TransformControl extends Sprite implements ITransformControl
 	{
 		protected var _root:Scene3D;
 		protected var _skinContainer:Sprite;
@@ -40,14 +40,28 @@
 				control.mode = _mode;
 			}
 			
-			interUpdate();
+			this.update();
 		}
+		
+		
 		
 		protected var _ctrls:Array;
 		//注册点在target内部的坐标
-		protected var _interReg:Vector3D;
+		protected var _innerReg:Vector3D;
 		//注册点在target外部的坐标
 		protected var _outReg:Vector3D;
+		//在stage下的注册点坐标
+		protected var _reg:Point;
+		public function get registration():Point {
+			return _reg;
+		}
+		public function set registration(pt:Point):void {
+			_reg = pt.clone();
+			if (_inited) {
+				_innerReg = _target.globalToLocal3D(_reg);
+				update();
+			}
+		}
 		
 		//原始的matrix3d
 		protected var _originMX:Matrix3D;
@@ -78,7 +92,8 @@
 			}
 			
 			if (!_root.visible)_root.visible = true;
-						
+			if (!_skinContainer.visible)_skinContainer.visible = true;
+			
 			if (_target.transform.matrix3D == null) {
 				_target.z = 0.1;
 			}
@@ -91,15 +106,13 @@
 			_originMX = this.getConcatenatedMatrix3D();
 			_targetMX = _originMX.clone();
 			
-			//调整位置到target注册点
+			//计算内部注册点
 			var internalRect:Rectangle = _target.getRect(_target);
 			var pt:Point = new Point(internalRect.left + internalRect.width / 2, internalRect.top + internalRect.height / 2);
-			pt = _target.localToGlobal(pt);
-			_interReg = _target.globalToLocal3D(pt);
-		
-			_outReg = _targetMX.transformVector(_interReg);
+			_reg = _target.localToGlobal(pt);
+			_innerReg = _target.globalToLocal3D(_reg);
 			
-			interUpdate();
+			this.update();
 		}
 		
 		//--------------------------------
@@ -113,16 +126,24 @@
 			_skinContainer = new Sprite();
 			addChildAt(_skinContainer, 0);
 			
-			if (stage) onAdded();
-			else addEventListener(Event.ADDED_TO_STAGE, onAdded);
+			if (stage) onInterAdded();
+			else addEventListener(Event.ADDED_TO_STAGE, onInterAdded);
 			
-			addEventListener(Event.REMOVED_FROM_STAGE, onRemoved);
+			addEventListener(Event.REMOVED_FROM_STAGE, onInterRemoved);
+		}
+		
+		private function onInterAdded(evt:Event = null):void {
+			if (_inited) return;
+			_inited = true;
+			this.onAdded(evt);
+		}
+		
+		private function onInterRemoved(evt:Event = null):void {
+			_inited = false;
+			this.onRemoved(evt);
 		}
 		
 		protected function onAdded(evt:Event = null):void {
-			if (_inited) return;
-			_inited = true;
-			
 			_regCtrl = new RegistrationControl();
 			_regCtrl.setCursor(new RegistrationControlCursor);
 			_root.addChild(_regCtrl);
@@ -135,11 +156,11 @@
 			this.addEventListener(Event.DEACTIVATE, onControlDeactived);
 			this.addEventListener(Event.CHANGE, onChange);
 			_regCtrl.addEventListener(Event.CHANGE, onChangeReg);
+			
+			this.target = _target;
 		}
 		
 		protected function onRemoved(evt:Event = null):void {
-			_inited = false;
-			
 			this.removeEventListener(Event.ACTIVATE, onControlActived);
 			this.removeEventListener(Event.DEACTIVATE, onControlDeactived);
 			this.removeEventListener(Event.CHANGE, onChange);
@@ -150,13 +171,21 @@
 		//--------public functions--------
 		//--------------------------------
 		
-		public function update():Boolean {
-			if (_target == null) return false;
+		public function update():void {
+			if (_target == null) return;
+			_originMX = this.getConcatenatedMatrix3D();
+			_targetMX = _originMX.clone();
+			_outReg = _targetMX.transformVector(_innerReg);
 			
-			var pos:Point = _target.local3DToGlobal(_interReg);
+			interUpdate();
+		}
+		
+		protected function interUpdate():void {
+			var pos:Point = _target.local3DToGlobal(_innerReg);
 			var pt:Point = this.getProjectionCenter();
 			pos.x -= pt.x;
 			pos.y -= pt.y;
+			
 			pos = this.globalToLocal(pos);
 			
 			if (_mode == Transform3DMode.GLOBAL) {
@@ -167,16 +196,9 @@
 				_controlMX.position = new Vector3D(pos.x, pos.y, 0);
 			}
 			
-			updateControls();
-			
-			_root.forceRender();
-			
-			return true;
-		}
-		
-		protected function interUpdate():void {
-			if (this.update()) {
-				this.dispatchEvent(new TransformEvent(TransformEvent.UPDATE));
+			if(_inited){
+				updateControls();
+				_root.forceRender();
 			}
 		}
 		
@@ -215,7 +237,7 @@
 		 * @param	target
 		 * @return
 		 */
-		protected function isTargetValid(dp:DisplayObject):Boolean {
+		public function isTargetValid(dp:DisplayObject):Boolean {
 			return !(dp == this || (dp && contains(dp)) || (dp is DisplayObjectContainer && (dp as DisplayObjectContainer).contains(this)));
 		}
 		
@@ -225,14 +247,18 @@
 			_targetMX = null;
 			_controlMX = null;
 			_root.visible = false;
+			_skinContainer.visible = false;
 		}
 		
 		protected function onChangeReg(evt:Event):void {
 			if (_target == null) return;
-			var pt:Point = new Point(stage.mouseX - _regCtrl.dragOffsetX, stage.mouseY - _regCtrl.dragOffsetY);
-			_interReg = _target.globalToLocal3D(pt);
-			_outReg = _targetMX.transformVector(_interReg);
-			interUpdate();
+			_reg = new Point(stage.mouseX - _regCtrl.dragOffsetX, stage.mouseY - _regCtrl.dragOffsetY);
+			_innerReg = _target.globalToLocal3D(_reg);
+			_outReg = _targetMX.transformVector(_innerReg);
+			
+			this.interUpdate();
+			
+			this.dispatchEvent(new TransformEvent(TransformEvent.REGISTRATION));
 		}
 		
 		private function onChange(evt:Event):void {
@@ -255,6 +281,7 @@
 			_target.transform.matrix3D = _targetMX;
 			
 			interUpdate();
+			this.dispatchEvent(new TransformEvent(TransformEvent.UPDATE));
 		}
 		
 		private function onControlActived(evt:Event):void {
@@ -277,6 +304,7 @@
 			
 			this.onDeactiveControl(evt.target as DimentionControl);
 			this.interUpdate();
+			this.dispatchEvent(new TransformEvent(TransformEvent.UPDATE));
 		}
 		
 		protected function onChangeControlValue(ctrl:DimentionControl):void {
@@ -287,7 +315,7 @@
 			for each(var ctrl:DimentionControl in _ctrls) {
 				if (ctrl == _regCtrl) continue;
 				if (!ctrl.actived) {
-					ctrl.alpha = .5;
+					ctrl.alpha = 1;
 				}else {
 					ctrl.alpha = 1;
 				}

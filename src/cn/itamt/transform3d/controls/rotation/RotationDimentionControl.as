@@ -6,6 +6,8 @@ package cn.itamt.transform3d.controls.rotation
 	import cn.itamt.transform3d.Util;
 	import flash.display.Shape;
 	import flash.events.Event;
+	import flash.filters.GlowFilter;
+	import flash.filters.GradientGlowFilter;
 	import flash.geom.Matrix3D;
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
@@ -58,7 +60,7 @@ package cn.itamt.transform3d.controls.rotation
 		public function RotationDimentionControl() 
 		{
 			super();
-			_wedgeStyle = new Style(0x0000ff, .7, 0x000000, 0);
+			_wedgeStyle = new Style(0x0000ff, .8, 0x000000, 0);
 			_style.borderThickness = 1.5;
 		}
 		
@@ -97,7 +99,7 @@ package cn.itamt.transform3d.controls.rotation
 			
 			this.graphics3D.clear();
 			this.graphics3D.lineStyle(_wedgeStyle.borderThickness, _wedgeStyle.borderColor, _wedgeStyle.borderAlpha);
-			this.graphics3D.beginFill(_wedgeStyle.fillColor, _wedgeStyle.fillAlpha*.3);
+			//this.graphics3D.beginFill(_wedgeStyle.fillColor, _wedgeStyle.fillAlpha*.3);
 			this.graphics3D.drawCircle(0, 0, _radius);
 			this.graphics3D.endFill();
 			

@@ -22,9 +22,9 @@ package cn.itamt.transform3d.controls
 		public function Control() 
 		{
 			if (stage) onAdded();
-			else addEventListener(Event.ADDED_TO_STAGE, onAdded);
+			else addEventListener(Event.ADDED_TO_STAGE, onInterAdded);
 			
-			addEventListener(Event.REMOVED_FROM_STAGE, onRemoved);
+			addEventListener(Event.REMOVED_FROM_STAGE, onInterRemoved);
 		}
 		
 		//-------------------------
@@ -33,12 +33,25 @@ package cn.itamt.transform3d.controls
 		
 		protected function onAdded(e:Event = null):void 
 		{
+		}
+		
+		private function onInterAdded(e:Event):void 
+		{
+			if (_inited) return;
 			_inited = true;
+			this.onAdded(e);
 		}
 		
 		protected function onRemoved(e:Event = null):void {
-			_inited = false;
 		}
+		
+		private function onInterRemoved(e:Event):void {
+			if (!_inited) return;
+			_inited = false;
+			this.onInterRemoved(e);
+		}
+		
+		
 		
 		/**
 		 * 完全释放该对象

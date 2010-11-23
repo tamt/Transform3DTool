@@ -28,6 +28,7 @@ package cn.itamt.transform3d.controls
 			return _value;
 		}
 		
+		protected var _isOnMouse:Boolean = false;
 		protected var _textfield:TextField;
 		protected var _cursor:DisplayObject;
 		protected var _mousePoint:Point;
@@ -91,7 +92,7 @@ package cn.itamt.transform3d.controls
 		//-------------------------
 		public function DimentionControl() 
 		{
-			_style = new Style();
+			_style = new Style(0x0000ff, .5, 0, 1, 1);
 		}
 		
 		//-------------------------
@@ -100,6 +101,8 @@ package cn.itamt.transform3d.controls
 		
 		override protected function onAdded(e:Event = null):void 
 		{	
+			super.onAdded(e);
+			
 			if (_sp == null) {
 				_sp = new Shape3D();
 				this.addChild(_sp);
@@ -111,13 +114,16 @@ package cn.itamt.transform3d.controls
 				_textfield.mouseEnabled = _textfield.mouseWheelEnabled = _textfield.visible = false;
 			}
 			
-			super.onAdded(e);
-			
 			//addChild(_textfield);
 			
 			this.addEventListener(MouseEvent.ROLL_OVER, onRollOver);
 			this.addEventListener(MouseEvent.ROLL_OUT, onRollOut);
 			this.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+			this.stage.addEventListener(MouseEvent.MOUSE_UP, onOtherMouseUp);
+			
+			if (this.hitTestPoint(this.stage.mouseX, this.stage.mouseY, true)) {
+				this.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OVER));
+			}
 			
 			if (_skin) this.buildListenersToSkin();
 			
@@ -129,7 +135,7 @@ package cn.itamt.transform3d.controls
 		}
 		
 		override protected function onRemoved(e:Event = null):void {
-			super.onAdded(e);
+			super.onRemoved(e);
 			
 			this.clear();
 			
@@ -140,10 +146,13 @@ package cn.itamt.transform3d.controls
 			_startDragPoint3D = null;
 			_stopDragPoint = null;
 			
+			this.removeEventListener(MouseEvent.ROLL_OVER, onRollOver);
+			this.removeEventListener(MouseEvent.ROLL_OUT, onRollOut);			
 			this.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 			if (this.stage) {
 				this.stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 				this.stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+				this.stage.removeEventListener(MouseEvent.MOUSE_UP, onOtherMouseUp);
 			}
 			
 			if (_skin) this.clearListenersToSkin();
@@ -203,9 +212,13 @@ package cn.itamt.transform3d.controls
 			this._draging = false;
 			this._stopDragPoint = this._mousePoint.clone();
 			
-			if (CustomMouseCursor.cursor == _cursor) {
+			if (!this._isOnMouse && CustomMouseCursor.cursor == _cursor) {
 				CustomMouseCursor.unlock();
 				CustomMouseCursor.clear();
+			}
+			
+			if (this._isOnMouse) {
+				CustomMouseCursor.show(_cursor);
 			}
 			
 			_actived = false;
@@ -213,6 +226,16 @@ package cn.itamt.transform3d.controls
 			this.onStopDrag();
 			
 			this.dispatchEvent(new Event(Event.DEACTIVATE, true));
+		}
+		
+		private function onOtherMouseUp(evt:MouseEvent):void {
+			if (evt.target == this) return;
+			if (this._isOnMouse) {
+				if (_cursor && !_draging) {
+					CustomMouseCursor.unlock();
+					CustomMouseCursor.show(_cursor);
+				}
+			}
 		}
 		
 		private function onMouseMove(evt:MouseEvent):void {
@@ -228,11 +251,14 @@ package cn.itamt.transform3d.controls
 		}
 		
 		private function onRollOver(evt:MouseEvent = null):void {
+			this._isOnMouse = true;
 			if (_cursor && !_draging)CustomMouseCursor.show(_cursor);
 		}
 		
 		private function onRollOut(evt:MouseEvent = null):void {
+			this._isOnMouse = false;
 			if (CustomMouseCursor.cursor == _cursor && !_draging) {
+				CustomMouseCursor.unlock();
 				CustomMouseCursor.clear();
 			}
 		}
@@ -241,6 +267,10 @@ package cn.itamt.transform3d.controls
 			_skin.addEventListener(MouseEvent.ROLL_OVER, onRollSkinOver);
 			_skin.addEventListener(MouseEvent.ROLL_OUT, onRollSkinOut);
 			_skin.addEventListener(MouseEvent.MOUSE_DOWN, onSkinMouseDown);
+			
+			if (_skin.hitTestPoint(this.stage.mouseX, this.stage.mouseY, true)) {
+				_skin.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OVER));
+			}
 		}
 		
 		protected function clearListenersToSkin():void {
@@ -300,18 +330,6 @@ package cn.itamt.transform3d.controls
 		public function setCursor(dp:DisplayObject):void {
 			_cursor = dp;
 			if (CustomMouseCursor.cursor == _cursor) CustomMouseCursor.show(_cursor);
-		}
-		
-		/**
-		 * 
-		 * @param	x
-		 * @param	y
-		 * @param	z
-		 */
-		public function setRotation(xr:Number = 0, yr:Number = 0, zr:Number = 0):void {
-			this.rotationX = xr;
-			this.rotationY = yr;
-			this.rotationZ = zr;
 		}
 	}
 

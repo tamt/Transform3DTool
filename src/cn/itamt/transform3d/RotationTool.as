@@ -35,15 +35,27 @@ package cn.itamt.transform3d
 		//
 		public override function set mode(val:uint):void {
 			if (Transform3DMode.isInvalidMode(val)) return;
-			super.mode = val;
+			_mode = val;
+			
+			if (!_inited) return;
+			
+			for each(var control:DimentionControl in _ctrls) {
+				control.mode = _mode;
+			}
 			
 			if (_mode == Transform3DMode.GLOBAL) {
+				_pCtrl.visible = true;
+				
 				_canUseMask = false;
 				this.clearMask();
-			}else if(_mode == Transform3DMode.INTERNAL){
+			}else if (_mode == Transform3DMode.INTERNAL) {
+				_pCtrl.visible = false;
+				
 				_canUseMask = true;
 				if(!_showFullControl && _target)this.applyMask();
 			}
+			
+			this.update();
 		}
 		
 		public function RotationTool():void {
@@ -59,8 +71,8 @@ package cn.itamt.transform3d
 			_pCtrl = new PRotationControl();
 			_ctrls = [_xCtrl, _yCtrl, _zCtrl, _pCtrl];
 			
-			_pCtrl.visible = false;
-			_xCtrl.radius = _yCtrl.radius = _zCtrl.radius = _pCtrl.radius = _radius;
+			_xCtrl.radius = _yCtrl.radius = _zCtrl.radius = _radius;
+			_pCtrl.radius = _radius + 10;
 			
 			_xCtrl.setCursor(new XControlCursor);
 			_yCtrl.setCursor(new YControlCursor);
@@ -86,18 +98,12 @@ package cn.itamt.transform3d
 			
 			_xMask = this.buildControlMask();
 			this._maskContainer.addChild(_xMask);
-			_xCtrl.shape.mask = _xMask;
-			_xMask.visible = false;
 			
 			_yMask = this.buildControlMask();
 			this._maskContainer.addChild(_yMask);
-			_yCtrl.shape.mask = _yMask;
-			_yMask.visible = false;
 			
 			_zMask = this.buildControlMask();
 			this._maskContainer.addChild(_zMask);
-			_zCtrl.shape.mask = _zMask;
-			_zMask.visible = false;
 			//---------------------------------------
 			
 			super.onAdded(evt);
@@ -141,7 +147,7 @@ package cn.itamt.transform3d
 		
 		protected override function onChangeControlValue(ctrl:DimentionControl):void {
 			if(_mode == Transform3DMode.INTERNAL){
-				_targetMX.prependTranslation(_interReg.x, _interReg.y, _interReg.z);
+				_targetMX.prependTranslation(_innerReg.x, _innerReg.y, _innerReg.z);
 				
 				switch(ctrl) {
 					case _xCtrl:
@@ -159,7 +165,7 @@ package cn.itamt.transform3d
 						break;
 				}
 				
-				_targetMX.prependTranslation( -_interReg.x, -_interReg.y, -_interReg.z);
+				_targetMX.prependTranslation( -_innerReg.x, -_innerReg.y, -_innerReg.z);
 			}else if (_mode == Transform3DMode.GLOBAL) {
 				_targetMX.appendTranslation(-_outReg.x,-_outReg.y,-_outReg.z);
 				
@@ -193,11 +199,11 @@ package cn.itamt.transform3d
 				}
 			}
 			
-			//半圆遮罩处理
-			if (!_canUseMask && _showFullControl) return;
-			
 			this._maskContainer.x = _root.x;
 			this._maskContainer.y = _root.y;
+			
+			//半圆遮罩处理
+			if (!_canUseMask || _showFullControl) return;
 			
 			var tolerance:Number = 1;
 			var crv:Vector3D = _deltaMx.decompose()[1];
@@ -241,8 +247,6 @@ package cn.itamt.transform3d
 					this.applyMask("z");
 				}
 			}
-			
-			//trace(int(crv.x*Util.RADIAN), int(crv.y*Util.RADIAN), int(crv.z*Util.RADIAN));
 		}
 		
 		private function buildControlMask():Shape {
@@ -250,6 +254,8 @@ package cn.itamt.transform3d
 			shape.graphics.beginFill(0xffffff, .5);
 			shape.graphics.drawRect(-_radius*2, -_radius*2, 4*_radius, _radius*2+1);
 			shape.graphics.endFill();
+			
+			shape.visible = false;
 			
 			return shape;
 		}
@@ -299,12 +305,13 @@ package cn.itamt.transform3d
 			}
 			
 			this._maskContainer.graphics.clear();
-			this._maskContainer.graphics.lineStyle(2, 0, .6);
+			this._maskContainer.graphics.lineStyle(2, 0, .7);
 			this._maskContainer.graphics.drawCircle(0, 0, _radius);
 		}
 		
 		protected override function clear():void {
-			this._maskContainer.graphics.clear();
+			if(this._maskContainer)this._maskContainer.graphics.clear();
+			
 			super.clear();
 		}
 	}

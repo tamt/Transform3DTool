@@ -52,7 +52,7 @@ package cn.itamt.transform3d.controls.translation
 			var b:Number = Math.atan2(pt.y, pt.x);
 			var a:Number = Util.projectRotationX(this.matrix) / Util.RADIAN;
 			var a:Number = a - b;
-			_value = Math.cos(a)*(Math.sqrt(pt.x * pt.x + pt.y * pt.y));
+			_value = Math.cos(a) * (Math.sqrt(pt.x * pt.x + pt.y * pt.y));
 			
 			//显示度数
 			if (showValue) {

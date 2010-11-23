@@ -2,9 +2,9 @@ package cn.itamt.transform3d.controls.translation
 {
 	import cn.itamt.transform3d.controls.DimentionControl;
 	import cn.itamt.transform3d.Util;
-	import net.badimon.five3D.utils.InternalUtils;
 	import flash.display.Sprite;
 	import flash.geom.Point;
+	import net.badimon.five3D.utils.InternalUtils;
 	
 	/**
 	 * ...
