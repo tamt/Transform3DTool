@@ -135,8 +135,6 @@ package cn.itamt.transform3d.controls
 		}
 		
 		override protected function onRemoved(e:Event = null):void {
-			super.onRemoved(e);
-			
 			this.clear();
 			
 			_mousePoint = null;
@@ -156,6 +154,8 @@ package cn.itamt.transform3d.controls
 			}
 			
 			if (_skin) this.clearListenersToSkin();
+			
+			super.onRemoved(e);
 		}
 		
 		/**

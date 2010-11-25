@@ -59,9 +59,7 @@ package cn.itamt.transform3d
 		}
 		
 		public function RotationTool():void {
-			_perspective = false;
-			
-			super();
+			_debug = true;
 		}
 		
 		override protected function onAdded(evt:Event = null):void {
@@ -110,19 +108,35 @@ package cn.itamt.transform3d
 		}
 		
 		override protected function onRemoved(evt:Event = null):void {
-			super.onRemoved(evt);
+			this._maskContainer.removeChild(_xMask);
+			this._maskContainer.removeChild(_yMask);
+			this._maskContainer.removeChild(_zMask);
+			
+			_xMask = null;
+			_yMask = null;
+			_zMask = null;
+			
+			removeChild(this._maskContainer);
+			this._maskContainer = null;
+			
+			_root.removeChild(_xCtrl);
+			_root.removeChild(_yCtrl);
+			_root.removeChild(_zCtrl);
+			_root.removeChild(_pCtrl);
 			
 			_xCtrl.dispose();
 			_yCtrl.dispose();
 			_zCtrl.dispose();
 			_pCtrl.dispose();
-			_regCtrl.dispose();
 			
 			_xCtrl = null;
 			_yCtrl = null;
 			_xCtrl = null;
 			_pCtrl = null;
-			_regCtrl = null;
+			
+			_ctrls = null;
+			
+			super.onRemoved(evt);
 		}
 		
 		
@@ -167,6 +181,28 @@ package cn.itamt.transform3d
 				
 				_targetMX.prependTranslation( -_innerReg.x, -_innerReg.y, -_innerReg.z);
 			}else if (_mode == Transform3DMode.GLOBAL) {
+				//var reg:Vector3D = _innerReg.clone();
+				//reg = _target.transform.getRelativeMatrix3D(_target.parent).transformVector(_innerReg);
+				//
+				//_targetMX.appendTranslation(-reg.x,-reg.y,-reg.z);
+				//
+				//switch(ctrl) {
+					//case _xCtrl:
+						//_targetMX.appendRotation(_xCtrl.degree, Vector3D.X_AXIS);
+						//break;
+					//case _yCtrl:
+						//_targetMX.appendRotation(_yCtrl.degree, Vector3D.Y_AXIS);
+						//break;
+					//case _zCtrl:
+						//_targetMX.appendRotation(_zCtrl.degree, Vector3D.Z_AXIS);
+						//break;
+					//case _pCtrl:
+						//_targetMX.appendRotation(_pCtrl.degreeX, Vector3D.X_AXIS);
+						//_targetMX.appendRotation(_pCtrl.degreeY, Vector3D.Y_AXIS);
+						//break;
+				//}
+				//_targetMX.appendTranslation(reg.x,reg.y,reg.z);
+				
 				_targetMX.appendTranslation(-_outReg.x,-_outReg.y,-_outReg.z);
 				
 				switch(ctrl) {

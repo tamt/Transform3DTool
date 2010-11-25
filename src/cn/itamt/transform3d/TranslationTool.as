@@ -29,7 +29,6 @@ package cn.itamt.transform3d
 		
 		public function TranslationTool() 
 		{
-			_perspective = false;
 		}
 		
 		override protected function onAdded(evt:Event = null):void {
@@ -66,17 +65,24 @@ package cn.itamt.transform3d
 		}
 		
 		override protected function onRemoved(evt:Event = null):void {
-			super.onRemoved(evt);
 			
 			_xCtrl.dispose();
 			_yCtrl.dispose();
 			_zCtrl.dispose();
-			_regCtrl.dispose();
 			
 			_xCtrl = null;
 			_yCtrl = null;
 			_xCtrl = null;
-			_regCtrl = null;
+			
+			_skinContainer.removeChild(_xSkin);
+			_skinContainer.removeChild(_ySkin);
+			_skinContainer.removeChild(_zSkin);
+			
+			_xSkin = null;
+			_ySkin = null;
+			_zSkin = null;
+			
+			super.onRemoved(evt);
 		}
 		
 		//-------------------------------------
@@ -86,7 +92,7 @@ package cn.itamt.transform3d
 			var focalLen:Number = _target.root.transform.perspectiveProjection.focalLength;
 			var ratio:Number = Math.sin(_target.root.transform.perspectiveProjection.fieldOfView * .5 / Util.RADIAN);
 			var pos:Vector3D = _target.transform.matrix3D.position;
-			ratio *= (focalLen + pos.z)/focalLen;
+			ratio *= (focalLen + pos.z) / focalLen;
 			
 			var xdist:Number = (_xCtrl.distance * ratio);
 			var ydist:Number = (_yCtrl.distance * ratio);

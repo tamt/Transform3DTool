@@ -5,6 +5,7 @@
 	import cn.itamt.transform3d.events.TransformEvent;
 	import cn.itamt.transform3d.Transform3DMode;
 	import cn.itamt.transform3d.Util;
+	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.geom.*;
@@ -18,6 +19,8 @@
 	 */
 	public class TransformControl extends Sprite implements ITransformControl
 	{
+		protected var _debug:Boolean;
+		
 		protected var _root:Scene3D;
 		protected var _skinContainer:Sprite;
 		protected var _inited:Boolean = false;
@@ -41,9 +44,7 @@
 			}
 			
 			this.update();
-		}
-		
-		
+		}		
 		
 		protected var _ctrls:Array;
 		//注册点在target内部的坐标
@@ -71,8 +72,9 @@
 		protected var _controlMX:Matrix3D;
 		//应用在control上的mx，只包含旋转数据
 		protected var _deltaMx:Matrix3D;
+		protected var _targetParentInvertMx:Matrix3D;
 		//
-		protected var _perspective:Boolean;
+		private var _perspective:Boolean;
 		//目标
 		protected var _target:DisplayObject;
 		public function get target():DisplayObject {
@@ -95,7 +97,7 @@
 			if (!_skinContainer.visible)_skinContainer.visible = true;
 			
 			if (_target.transform.matrix3D == null) {
-				_target.z = 0.1;
+				Util.converTo3DDisplayObject(_target);
 			}
 			
 			var pt:Point = this.getProjectionCenter();
@@ -103,9 +105,12 @@
 			_root.y = pt.y;
 			_root.viewDistance = _target.root.transform.perspectiveProjection.focalLength;
 			
+			_targetParentInvertMx = Util.getParentConcatenatedMatrix3D(_target);
+			_targetParentInvertMx.invert();
+			
 			_originMX = this.getConcatenatedMatrix3D();
 			_targetMX = _originMX.clone();
-			
+						
 			//计算内部注册点
 			var internalRect:Rectangle = _target.getRect(_target);
 			var pt:Point = new Point(internalRect.left + internalRect.width / 2, internalRect.top + internalRect.height / 2);
@@ -165,6 +170,10 @@
 			this.removeEventListener(Event.DEACTIVATE, onControlDeactived);
 			this.removeEventListener(Event.CHANGE, onChange);
 			_regCtrl.removeEventListener(Event.CHANGE, onChangeReg);
+			
+			_root.removeChild(_regCtrl);
+			_regCtrl.dispose();
+			_regCtrl = null;
 		}
 		
 		//--------------------------------
@@ -175,7 +184,7 @@
 			if (_target == null) return;
 			_originMX = this.getConcatenatedMatrix3D();
 			_targetMX = _originMX.clone();
-			_outReg = _targetMX.transformVector(_innerReg);
+			_outReg = this.caculateOutterReg();
 			
 			interUpdate();
 		}
@@ -192,7 +201,7 @@
 				_controlMX = new Matrix3D();
 				_controlMX.position = new Vector3D(pos.x, pos.y, 0);
 			}else if (_mode == Transform3DMode.INTERNAL) {
-				_controlMX = _target.transform.getRelativeMatrix3D(_root).clone();
+				_controlMX = _target.transform.getRelativeMatrix3D(_root);
 				_controlMX.position = new Vector3D(pos.x, pos.y, 0);
 			}
 			
@@ -220,12 +229,11 @@
 				}
 			}else{
 				_root.x = _controlMX.position.x + this.getProjectionCenter().x;
-				_root.y = _controlMX.position.y + this.getProjectionCenter().y;				
+				_root.y = _controlMX.position.y + this.getProjectionCenter().y;
 			
 				_skinContainer.x = _root.x;
 				_skinContainer.y = _root.y;
 			}
-			
 		}
 
 		//--------------------------------
@@ -248,13 +256,15 @@
 			_controlMX = null;
 			_root.visible = false;
 			_skinContainer.visible = false;
+			
+			if (sp) sp.graphics.clear();
 		}
 		
 		protected function onChangeReg(evt:Event):void {
 			if (_target == null) return;
 			_reg = new Point(stage.mouseX - _regCtrl.dragOffsetX, stage.mouseY - _regCtrl.dragOffsetY);
 			_innerReg = _target.globalToLocal3D(_reg);
-			_outReg = _targetMX.transformVector(_innerReg);
+			_outReg = this.caculateOutterReg();
 			
 			this.interUpdate();
 			
@@ -278,6 +288,9 @@
 				invertMatrix.invert();
 				_targetMX.append(invertMatrix);
 			}
+			
+			_targetMX.append(_targetParentInvertMx);
+			
 			_target.transform.matrix3D = _targetMX;
 			
 			interUpdate();
@@ -352,6 +365,27 @@
 				mx.appendTranslation(_root.x, _root.y, _root.z);
 				return mx;
 			}
+		}
+		
+		private var sp:Shape;
+		private function caculateOutterReg():Vector3D {
+			var parentMx:Matrix3D = _target.transform.getRelativeMatrix3D(_target.parent);
+			var pos:Vector3D = parentMx.transformVector(_innerReg);
+			
+			if(_debug){
+				if(sp == null){
+					sp = new Shape();
+					_target.parent.addChild(sp);
+				}
+				sp.graphics.clear();
+				sp.graphics.beginFill(0xff0000);
+				sp.graphics.drawCircle(0,  0, 20);
+				sp.graphics.endFill();
+				sp.x = pos.x;
+				sp.y = pos.y;
+				sp.z = pos.z;
+			}
+			return pos;
 		}
 	}
 

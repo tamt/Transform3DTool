@@ -43,18 +43,6 @@ package cn.itamt.transform3d.skins
 		}
 		
 		protected override function draw():void {
-			//graphics.beginFill(_style.borderColor, _style.borderAlpha);
-			//graphics.moveTo(0, 0);
-			//graphics.lineTo(this.length, 0);
-			//graphics.moveTo(this._length + _arrowWidth, 0);
-			//graphics.lineTo(this._length, _arrowWidth/2);
-			//graphics.lineTo(this._length, -_arrowWidth/2);
-			//graphics.lineTo(this._length + _arrowWidth, 0);
-			//graphics.endFill();
-			//graphics.beginFill(_style.borderColor, .5);
-			//graphics.drawEllipse(this._length - _arrowWidth/4, -_arrowWidth/2, _arrowWidth, _arrowWidth);
-			//graphics.endFill();	
-			
 			var radius:Number = _arrowHeight / 2;
 			var alpha:Number = Math.acos(radius/_arrowWidth);
 			var a:Number = Math.cos(alpha) * radius;

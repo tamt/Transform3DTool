@@ -65,11 +65,15 @@ package cn.itamt.transform3d
 			
 			_tool = val;
 			if (_tool == "rotation") {
-				_rToolBtn.active = _rTool.visible = true;
-				_tToolBtn.active = _tTool.visible = false;
+				_rToolBtn.active = true;
+				if (!this.contains(_rTool)) addChild(_rTool);
+				_tToolBtn.active = false;
+				if (this.contains(_tTool)) removeChild(_tTool);
 			}else if (_tool == "translation") {
-				_rToolBtn.active = _rTool.visible = false;
-				_tToolBtn.active = _tTool.visible = true;
+				_rToolBtn.active = false;
+				if (this.contains(_rTool)) removeChild(_rTool);
+				_tToolBtn.active = true;
+				if (!this.contains(_tTool)) addChild(_tTool);
 			}
 		}
 		
@@ -221,8 +225,8 @@ package cn.itamt.transform3d
 		//------------------------------------
 		
 		public function update():void {
-			_rTool.update();
-			_tTool.update();
+			if (tool == "rotation") _rTool.update();
+			if (tool == "translation")_tTool.update();
 			_gTool.update();
 		}
 		

@@ -3,6 +3,7 @@ package cn.itamt.transform3d
 	import flash.display.DisplayObject;
 	import flash.display.Graphics;
 	import flash.display.Stage;
+	import flash.geom.Matrix;
 	import flash.geom.Matrix3D;
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
@@ -181,6 +182,57 @@ package cn.itamt.transform3d
 		 */
 		public static function local3DToTarget(local:DisplayObject, vt:Vector3D, target:DisplayObject):Point {
 			return target.globalToLocal(local.local3DToGlobal(vt));
+		}
+		
+		public static function matrixTo3D(matrix:Matrix):Matrix3D {
+			var mx3d:Matrix3D = new Matrix3D();
+			mx3d.position = new Vector3D(matrix.tx, matrix.ty, 0);
+			mx3d.prependRotation(Math.asin(matrix.b)*180/Math.PI, Vector3D.Z_AXIS);
+			mx3d.prependScale(matrix.a, matrix.d, 1);
+			return mx3d;
+		}
+		
+		public static function converTo3DDisplayObject(target:DisplayObject):void {
+			if (target.transform.matrix3D == null && !(target is Stage)) {
+				//target.transform.matrix3D = matrixTo3D(target.transform.matrix);
+				target.z = .1;
+				target.z = 0;
+			}
+			
+			//if (target.parent) {
+				//converTo3DDisplayObject(target.parent);
+			//}
+		}
+		
+		public static function get3DObjectConcatenatedMatrix(target:DisplayObject):Matrix {
+			while (target && !(target is Stage)) {
+				if (target.transform.matrix) {
+					return target.transform.concatenatedMatrix;
+				}else {
+					target = target.parent;	
+				}
+			}
+			
+			return new Matrix();
+		}
+		
+		
+		public static function getParentConcatenatedMatrix3D(target:DisplayObject):Matrix3D {
+			while (target && !(target is Stage)) {
+				if (target.transform.matrix) {
+					var mx2d:Matrix = target.transform.matrix.clone();
+					target.z = 1;
+					var mx3d:Matrix3D = target.transform.getRelativeMatrix3D(target.root);
+					target.z = 0;
+					mx3d = target.transform.getRelativeMatrix3D(target.root);
+					target.transform.matrix = mx2d;
+					return mx3d;
+				}else {
+					target = target.parent;	
+				}
+			}
+			
+			return new Matrix3D();
 		}
 		
 	}

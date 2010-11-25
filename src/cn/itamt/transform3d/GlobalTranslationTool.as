@@ -36,7 +36,6 @@ package cn.itamt.transform3d
 		
 		public function GlobalTranslationTool() 
 		{
-			this._perspective = false;
 		}
 		
 		protected override function onAdded(evt:Event = null):void {

@@ -25,9 +25,10 @@ package cn.itamt.transform3d.controls.translation
 			
 			_sp.graphics3D.clear();
 			
-			if(_mode == Transform3DMode.GLOBAL){
-				_sp.graphics3D.beginFill(_style.fillColor, _style.fillAlpha);
-				_sp.graphics3D.drawCircle(0, 0, 10);
+			if (_mode == Transform3DMode.GLOBAL) {
+				//_sp.graphics3D.beginFill(_style.fillColor, _style.fillAlpha);
+				_sp.graphics3D.beginFill(_style.borderColor, _style.borderAlpha);
+				_sp.graphics3D.drawCircle(0, 0, 30);
 				_sp.graphics3D.endFill();
 			}else if (_mode == Transform3DMode.INTERNAL) {
 				_sp.graphics3D.lineStyle(_style.borderThickness, _style.borderColor);

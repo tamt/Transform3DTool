@@ -36,8 +36,7 @@ package cn.itamt.transform3d
 		
 		public function Main():void 
 		{
-			if (stage) init();
-			else addEventListener(Event.ADDED_TO_STAGE, init);
+			init();
 		}
 		
 		private function init(e:Event = null):void 
@@ -46,8 +45,10 @@ package cn.itamt.transform3d
 			
 			CustomMouseCursor.init(this.stage);
 			
-			test.rotationX = test.rotationY = test.rotationZ = 20;
-			
+			//test.x = 30;
+			//test.y = 30;
+			//test.rotation = 20;
+						
 			tool3d = new Transform3DTool();
 			addChild(tool3d);
 			
