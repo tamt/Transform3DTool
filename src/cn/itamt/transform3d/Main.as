@@ -19,6 +19,7 @@ package cn.itamt.transform3d
 	import flash.text.TextField;
 	import net.badimon.five3D.display.Scene3D;
 	import net.badimon.five3D.display.Shape3D;
+	import net.badimon.five3D.utils.InternalUtils;
 	
 	/**
 	 * ...
@@ -36,6 +37,17 @@ package cn.itamt.transform3d
 		
 		public function Main():void 
 		{
+			
+			var _root:Scene3D = new Scene3D();
+			this.addChild(_root);
+			var sp:Shape3D = new Shape3D();
+			sp.graphics3D.beginFill(0xff00ff);
+			Util.drawWedge3D(sp.graphics3D, 100, 100, 50, 180, 100, 10);
+			sp.graphics3D.endFill();
+			_root.addChild(sp);
+						
+			tool3d = new Transform3DTool();
+			addChild(tool3d);
 			init();
 		}
 		
@@ -48,9 +60,6 @@ package cn.itamt.transform3d
 			//test.x = 30;
 			//test.y = 30;
 			//test.rotation = 20;
-						
-			tool3d = new Transform3DTool();
-			addChild(tool3d);
 			
 			//tTool = new TranslationTool();
 			//addChild(tTool);

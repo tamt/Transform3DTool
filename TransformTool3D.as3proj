@@ -14,8 +14,6 @@
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="src" />
-    <class path="..\..\git\tInspector\src" />
-    <class path="..\..\FIVe3D_F10\src" />
   </classpaths>
   <!-- Build options -->
   <build>
