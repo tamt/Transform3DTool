@@ -4,7 +4,7 @@ package cn.itamt.transform3d.toolbar
 	import flash.display.SimpleButton;
 	
 	/**
-	 * ...
+	 * a simle custom ToolButton.
 	 * @author tamt
 	 */
 	public class ToolButton extends SimpleButton

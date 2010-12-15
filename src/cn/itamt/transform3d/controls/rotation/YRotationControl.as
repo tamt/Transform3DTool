@@ -7,7 +7,7 @@ package cn.itamt.transform3d.controls.rotation
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	/**
-	 * ...
+	 * y rotation control, used in RotationTool for y rotation interaction
 	 * @author tamt
 	 */
 	public class YRotationControl extends RotationDimentionControl

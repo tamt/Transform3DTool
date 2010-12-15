@@ -9,7 +9,7 @@ package cn.itamt.transform3d.controls.rotation
 	import flash.geom.Vector3D;
 	import net.badimon.five3D.display.Scene3D;
 	/**
-	 * ...
+	 * x rotation control, used in RotationTool for x rotation interaction
 	 * @author tamt
 	 */
 	public class XRotationControl extends RotationDimentionControl

@@ -14,7 +14,7 @@ package cn.itamt.transform3d
 	import flash.geom.Vector3D;
 	
 	/**
-	 * ...
+	 * translation component of Transform3DTool
 	 * @author tamt
 	 */
 	public class TranslationTool extends TransformControl
@@ -105,8 +105,8 @@ package cn.itamt.transform3d
 			}
 		}
 		
-		protected override function updateControls():void {
-			super.updateControls();
+		protected override function updateControls(deltaMX:Matrix3D = null):void {
+			super.updateControls(deltaMX);
 				
 			for each(var ctrl:DimentionControl in _ctrls) {
 				if (ctrl == _regCtrl) {

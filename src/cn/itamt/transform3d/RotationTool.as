@@ -11,7 +11,7 @@ package cn.itamt.transform3d
 	import net.badimon.five3D.display.Scene3D;
 	
 	/**
-	 * ...
+	 * RotationTool component of Transform3DTool
 	 * @author tamt
 	 */
 	public class RotationTool extends TransformControl
@@ -28,11 +28,11 @@ package cn.itamt.transform3d
 		protected var _zMask:Shape;
 		protected var _maskContainer:Sprite;
 		
-		//显示半圆还是显示全圆
+		//show full circle rotation control, or half circle.
 		private var _showFullControl:Boolean;
+		//make use of mask for haflf circle control effect, _canUseMask implement wether can use mask in current context.
 		private var _canUseMask:Boolean;
 		
-		//
 		public override function set mode(val:uint):void {
 			if (Transform3DMode.isInvalidMode(val)) return;
 			_mode = val;
@@ -56,10 +56,6 @@ package cn.itamt.transform3d
 			}
 			
 			this.update();
-		}
-		
-		public function RotationTool():void {
-			_debug = true;
 		}
 		
 		override protected function onAdded(evt:Event = null):void {
@@ -88,8 +84,9 @@ package cn.itamt.transform3d
 			_root.addChild(_pCtrl);
 			
 			
-			//---------------------------------------
-			//-------------半圆遮罩------------------
+			//--------------------------------------------
+			//-----for half circle control effect---------
+			//--------------------------------------------
 			this._maskContainer = new Sprite();
 			this._maskContainer.mouseEnabled = false;
 			this.addChild(this._maskContainer);
@@ -181,28 +178,7 @@ package cn.itamt.transform3d
 				
 				_targetMX.prependTranslation( -_innerReg.x, -_innerReg.y, -_innerReg.z);
 			}else if (_mode == Transform3DMode.GLOBAL) {
-				//var reg:Vector3D = _innerReg.clone();
-				//reg = _target.transform.getRelativeMatrix3D(_target.parent).transformVector(_innerReg);
-				//
-				//_targetMX.appendTranslation(-reg.x,-reg.y,-reg.z);
-				//
-				//switch(ctrl) {
-					//case _xCtrl:
-						//_targetMX.appendRotation(_xCtrl.degree, Vector3D.X_AXIS);
-						//break;
-					//case _yCtrl:
-						//_targetMX.appendRotation(_yCtrl.degree, Vector3D.Y_AXIS);
-						//break;
-					//case _zCtrl:
-						//_targetMX.appendRotation(_zCtrl.degree, Vector3D.Z_AXIS);
-						//break;
-					//case _pCtrl:
-						//_targetMX.appendRotation(_pCtrl.degreeX, Vector3D.X_AXIS);
-						//_targetMX.appendRotation(_pCtrl.degreeY, Vector3D.Y_AXIS);
-						//break;
-				//}
-				//_targetMX.appendTranslation(reg.x,reg.y,reg.z);
-				
+			
 				_targetMX.appendTranslation(-_outReg.x,-_outReg.y,-_outReg.z);
 				
 				switch(ctrl) {
@@ -225,8 +201,8 @@ package cn.itamt.transform3d
 			}
 		}
 		
-		protected override function updateControls():void {
-			super.updateControls();
+		protected override function updateControls(deltaMX:Matrix3D = null):void {
+			super.updateControls(deltaMX);
 			
 			for each(var ctrl:DimentionControl in _ctrls) {
 				if (ctrl == _regCtrl || ctrl == _pCtrl) {
@@ -238,7 +214,7 @@ package cn.itamt.transform3d
 			this._maskContainer.x = _root.x;
 			this._maskContainer.y = _root.y;
 			
-			//半圆遮罩处理
+			//for half circle control effect.
 			if (!_canUseMask || _showFullControl) return;
 			
 			var tolerance:Number = 1;
@@ -297,7 +273,7 @@ package cn.itamt.transform3d
 		}
 		
 		/**
-		 * 清除某一个contrl的遮罩
+		 * clear mask of one contrl
 		 * @param	dimention
 		 */
 		private function clearMask(dimention:String = null):void {
@@ -320,7 +296,7 @@ package cn.itamt.transform3d
 		}
 		
 		/**
-		 * 给某一个contrl应用遮罩
+		 * apply mask to contrl
 		 * @param	dimention
 		 */
 		private function applyMask(dimention:String = null):void {

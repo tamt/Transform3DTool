@@ -15,6 +15,8 @@ package cn.itamt.transform3d
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
+	import flash.geom.Matrix3D;
+	import flash.geom.Vector3D;
 	import flash.geom.Rectangle;
 	
 	/**
@@ -35,7 +37,7 @@ package cn.itamt.transform3d
 			return _tTool;
 		}
 		
-		//操作条相关
+		//tool selector bar
 		protected var _tToolBtn:ToolButton;
 		protected var _rToolBtn:ToolButton;
 		protected var _modeBtn:ToolButton;
@@ -100,7 +102,7 @@ package cn.itamt.transform3d
 			}
 		}
 		
-		//注册点
+		//registration
 		protected var _reg:Point;
 		public function get registration():Point {
 			return _reg;
@@ -126,7 +128,7 @@ package cn.itamt.transform3d
 			
 			_tools = [_rTool, _tTool, _gTool];
 			
-			//操作条相关
+			//tool selector bar
 			_bar = new ToolBar();
 			_tToolBtn = new TranslationToolButton();
 			_rToolBtn = new RotationToolButton();
@@ -171,7 +173,7 @@ package cn.itamt.transform3d
 			var curTool:TransformControl = evt.target as TransformControl;
 			for each(var tool:TransformControl in _tools) {
 				if (tool != curTool) {
-					tool.update();
+					tool.update(curTool.concatenatedMX, curTool.controlMX, curTool.deltaMX, curTool.outReg);
 				}
 			}
 			
@@ -224,14 +226,14 @@ package cn.itamt.transform3d
 		//-----------public functions---------
 		//------------------------------------
 		
-		public function update():void {
-			if (tool == "rotation") _rTool.update();
-			if (tool == "translation")_tTool.update();
-			_gTool.update();
+		public function update(concatenatedMX:Matrix3D = null, controlMX:Matrix3D = null, deltaMX:Matrix3D = null, outReg:Vector3D = null):void {
+			if (tool == "rotation") _rTool.update(concatenatedMX, controlMX, deltaMX, outReg);
+			if (tool == "translation")_tTool.update(concatenatedMX, controlMX, deltaMX, outReg);
+			_gTool.update(concatenatedMX, controlMX, deltaMX, outReg);
 		}
 		
 		/**
-		 * 目标是否有效
+		 * is target valid
 		 * @param	target
 		 * @return
 		 */

@@ -9,7 +9,7 @@ package cn.itamt.transform3d.controls
 	import net.badimon.five3D.display.Sprite3D;
 	
 	/**
-	 * ...
+	 * basic control component 
 	 * @author tamt
 	 */
 	public class Control extends Sprite3D
@@ -54,7 +54,7 @@ package cn.itamt.transform3d.controls
 		
 		
 		/**
-		 * 完全释放该对象
+		 * dispose this object completely
 		 */
 		public function dispose():void {
 			onRemoved();

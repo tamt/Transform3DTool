@@ -8,8 +8,9 @@ package cn.itamt.transform3d
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
 	import net.badimon.five3D.display.Graphics3D;
+
 	/**
-	 * ...
+	 * some util functios used in Transform3DTool
 	 * @author tamt
 	 */
 	public class Util
@@ -18,8 +19,7 @@ package cn.itamt.transform3d
 		public static const RADIAN:Number = 180 / Math.PI;
 		
 		/**
-		 * draws pie shaped wedges.  Could be employeed to draw pie charts.
-		 * 
+		 * draws pie shaped wedges.
 		 * @param target the Graphics on which the wedge is to be drawn.
 		 * @param x x coordinate of the center point of the wedge
 		 * @param y y coordinate of the center point of the wedge
@@ -130,7 +130,7 @@ package cn.itamt.transform3d
 		}
 		
 		/**
-		 * 获取一个matrix在投射在屏幕上x角度
+		 * get one matrix's rotationY degree project on Screen.
 		 * @param	matrix
 		 * @return
 		 */
@@ -143,7 +143,7 @@ package cn.itamt.transform3d
 		}
 		
 		/**
-		 * 获取一个matrix在投射在屏幕上y角度
+		 * get one matrix's rotationX degree project on Screen.
 		 * @param	matrix
 		 * @return
 		 */
@@ -159,7 +159,7 @@ package cn.itamt.transform3d
 		}
 		
 		/**
-		 * 获取一个matrix在投射在屏幕上y角度
+		 * get one matrix's rotationZ degree project on Screen.
 		 * @param	matrix
 		 * @return
 		 */
@@ -175,13 +175,20 @@ package cn.itamt.transform3d
 		}
 		
 		/**
-		 * 某对象的3d点映射到目标对象的坐标
+		 * project 3d point form one coordinate to an 2d coordinate
 		 * @param	vt
 		 * @param	displayObject
 		 * @return
 		 */
 		public static function local3DToTarget(local:DisplayObject, vt:Vector3D, target:DisplayObject):Point {
 			return target.globalToLocal(local.local3DToGlobal(vt));
+		}
+		
+		/**
+		 * project 2d point from one coordinate to another
+		 */
+		public static function localToTarget(local:DisplayObject, pt:Point, target:DisplayObject):Point{
+			return target.globalToLocal(local.localToGlobal(pt));
 		}
 		
 		public static function matrixTo3D(matrix:Matrix):Matrix3D {

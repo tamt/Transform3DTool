@@ -2,6 +2,8 @@ package cn.itamt.transform3d.controls
 {
 	import flash.display.DisplayObject;
 	import flash.geom.Point;
+	import flash.geom.Vector3D;
+	import flash.geom.Matrix3D;
 	
 	/**
 	 * ...
@@ -20,7 +22,7 @@ package cn.itamt.transform3d.controls
 		
 		function isTargetValid(target:DisplayObject):Boolean;
 		
-		function update():void;
+		function update(concatenatedMX:Matrix3D = null, controlMX:Matrix3D = null, deltaMX:Matrix3D = null, outReg:Vector3D = null):void;
 	}
 	
 }

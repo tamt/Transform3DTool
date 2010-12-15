@@ -8,9 +8,8 @@ package cn.itamt.transform3d.cursors
 	import flash.ui.Mouse;
 	
 	/**
-	 * 显示自定鼠标指针，使用时先调用CustomMouseCursor.init进行初始化
+	 * use for custom mouse cursor display. Call CustomMouseCursor.init(stage) first. then call CustomMouseCursor.show(..) to display your cursor.
 	 * @author tamt
-	 * @example CustomMouseCursor.init(stage; CustomMouseCursor.show(new Circle());
 	 */
 	public class CustomMouseCursor
 	{
@@ -33,7 +32,7 @@ package cn.itamt.transform3d.cursors
 		}
 		
 		/**
-		 * 显示鼠标指针
+		 * display custom cursom
 		 * @param	cursor 
 		 */
 		public static function show(cursor:DisplayObject = null):void {
@@ -62,7 +61,7 @@ package cn.itamt.transform3d.cursors
 		}
 		
 		/**
-		 * 隐藏
+		 * hide cursor.
 		 */
 		public static function hide():void {
 			if (_locked) return;
@@ -74,7 +73,7 @@ package cn.itamt.transform3d.cursors
 		}
 		
 		/**
-		 * 把鼠标指针还原到没有设置自定义指针之前的状态
+		 * clear the custom cursor setting.
 		 */
 		public static function clear():void {
 			if (_locked) return;
@@ -92,14 +91,14 @@ package cn.itamt.transform3d.cursors
 		}
 		
 		/**
-		 * 锁定鼠标指针，在解锁（unlock）之前，鼠标指针不会被修改（show、clear、hide没有效果）
+		 * lock cursor, the cursor won't be changed(show,clear,hide won't work) until unlock.
 		 */
 		public static function lock():void {
 			_locked = true;
 		}
 		
 		/**
-		 * 解锁鼠标指针
+		 * unlock cursor
 		 */
 		public static function unlock():void {
 			_locked = false;

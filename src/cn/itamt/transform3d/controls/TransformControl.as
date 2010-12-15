@@ -13,19 +13,23 @@
 	import flash.display.DisplayObjectContainer;
 	import net.badimon.five3D.display.Scene3D;
 	import net.badimon.five3D.display.Sprite3D;
+
 	/**
-	 * ...
+	 * base Class of RotationTool and TranslationTool.
 	 * @author tamt
 	 */
 	public class TransformControl extends Sprite implements ITransformControl
 	{
 		protected var _debug:Boolean;
 		
+		//root container of controls
 		protected var _root:Scene3D;
+		//skin container of controls
 		protected var _skinContainer:Sprite;
+		//
 		protected var _inited:Boolean = false;
 		
-		//修改注册点的Control
+		//the Control display the registrantion.
 		protected var _regCtrl:RegistrationControl;
 		
 		protected var _mode:uint = 1;
@@ -33,6 +37,7 @@
 			return _mode;
 		}
 		
+		//set the transform mode, either Internal or Global mode.
 		public function set mode(val:uint):void {
 			if (Transform3DMode.isInvalidMode(val)) return;
 			_mode = val;
@@ -44,43 +49,58 @@
 			}
 			
 			this.update();
-		}		
+		}	
 		
+		//sotre the contrls used for interaction, x contrl, y contrl, z control...
 		protected var _ctrls:Array;
-		//注册点在target内部的坐标
+		//target's registartion
 		protected var _innerReg:Vector3D;
-		//注册点在target外部的坐标
+		//target's registration relative to it's parent
 		protected var _outReg:Vector3D;
-		//在stage下的注册点坐标
-		protected var _reg:Point;
+		public function get outReg():Vector3D{
+			return _outReg;
+		}
+		//target's registration relatie to Stage
+		internal var _reg:Point;
 		public function get registration():Point {
 			return _reg;
 		}
+		//
 		public function set registration(pt:Point):void {
 			_reg = pt.clone();
 			if (_inited) {
 				_innerReg = _target.globalToLocal3D(_reg);
+				_outReg = this.caculateOutterReg();
 				update();
 			}
 		}
 		
-		//原始的matrix3d
+		//target's origin mx3d, before transform.
 		protected var _originMX:Matrix3D;
-		//计算出的matrix3d
+		//the mx3d will apply to target.
 		protected var _targetMX:Matrix3D;
-		//应用在control上的mx
+		//target's mx3d relative to this
+		protected var _concatenatedMX:Matrix3D;
+		public function get concatenatedMX():Matrix3D{
+			return _concatenatedMX;
+		} 
+		//the mx3d will apply to tool's controls.
 		protected var _controlMX:Matrix3D;
-		//应用在control上的mx，只包含旋转数据
+		public function get controlMX():Matrix3D{
+			return _controlMX;
+		}
+		//the mx3d will apply to tool's controls. exclude translation data.
 		protected var _deltaMx:Matrix3D;
-		protected var _targetParentInvertMx:Matrix3D;
+		public function get deltaMX():Matrix3D{
+			return _deltaMx;
+		}
 		//
-		private var _perspective:Boolean;
-		//目标
 		protected var _target:DisplayObject;
 		public function get target():DisplayObject {
 			return _target;
 		}
 		
+		//set transform tool's target.
 		public function set target(dp:DisplayObject):void {
 			if (!isTargetValid(dp)) {
 				return;
@@ -105,24 +125,25 @@
 			_root.y = pt.y;
 			_root.viewDistance = _target.root.transform.perspectiveProjection.focalLength;
 			
-			_targetParentInvertMx = Util.getParentConcatenatedMatrix3D(_target);
-			_targetParentInvertMx.invert();
-			
-			_originMX = this.getConcatenatedMatrix3D();
+			_concatenatedMX = this.getConcatenatedMatrix3D();
+			_originMX = this._target.transform.matrix3D.clone();
 			_targetMX = _originMX.clone();
 						
-			//计算内部注册点
+			//caculate the default registration.
 			var internalRect:Rectangle = _target.getRect(_target);
 			var pt:Point = new Point(internalRect.left + internalRect.width / 2, internalRect.top + internalRect.height / 2);
 			_reg = _target.localToGlobal(pt);
 			_innerReg = _target.globalToLocal3D(_reg);
+			_outReg = this.caculateOutterReg();
+
 			
 			this.update();
 		}
 		
 		//--------------------------------
+		//---------constructor------------
 		//--------------------------------
-		//--------------------------------
+
 		public function TransformControl() 
 		{	
 			_root = new Scene3D();
@@ -154,9 +175,10 @@
 			_root.addChild(_regCtrl);
 			_ctrls.push(_regCtrl);
 						
-			//设置mode
+			//apply default mode.
 			this.mode = _mode;
 			
+			//listene events dispatch from x,y,z controls and reg control.
 			this.addEventListener(Event.ACTIVATE, onControlActived);
 			this.addEventListener(Event.DEACTIVATE, onControlDeactived);
 			this.addEventListener(Event.CHANGE, onChange);
@@ -180,73 +202,74 @@
 		//--------public functions--------
 		//--------------------------------
 		
-		public function update():void {
+		public function update(concatenatedMX:Matrix3D = null, controlMX:Matrix3D = null, deltaMX:Matrix3D = null, outReg:Vector3D = null):void {
 			if (_target == null) return;
-			_originMX = this.getConcatenatedMatrix3D();
+			_concatenatedMX = concatenatedMX?concatenatedMX.clone():this.getConcatenatedMatrix3D();
+			_originMX = _target.transform.matrix3D; 
 			_targetMX = _originMX.clone();
-			_outReg = this.caculateOutterReg();
+			_outReg = outReg?outReg.clone():this.caculateOutterReg();
 			
-			interUpdate();
+			interUpdate(controlMX, deltaMX);
 		}
-		
-		protected function interUpdate():void {
-			var pos:Point = _target.local3DToGlobal(_innerReg);
-			var pt:Point = this.getProjectionCenter();
-			pos.x -= pt.x;
-			pos.y -= pt.y;
-			
-			pos = this.globalToLocal(pos);
-			
-			if (_mode == Transform3DMode.GLOBAL) {
-				_controlMX = new Matrix3D();
-				_controlMX.position = new Vector3D(pos.x, pos.y, 0);
-			}else if (_mode == Transform3DMode.INTERNAL) {
-				_controlMX = _target.transform.getRelativeMatrix3D(_root);
-				_controlMX.position = new Vector3D(pos.x, pos.y, 0);
-			}
-			
-			if(_inited){
-				updateControls();
-				_root.forceRender();
-			}
-		}
-		
-		protected function updateControls():void {
-			_deltaMx = _controlMX.clone();
-			var comps:Vector.<Vector3D> = new Vector.<Vector3D>(3);
-			comps[0] = new Vector3D(0, 0, 0, 0)
-			comps[1] = _deltaMx.decompose()[1].clone();
-			comps[2] = new Vector3D(1, 1, 1, 0);
-			_deltaMx.recompose(comps);
-			if(_perspective){
-				for each(var ctrl:DimentionControl in _ctrls) {
-					if (ctrl == _regCtrl) {
-						_regCtrl.x = _controlMX.position.x;
-						_regCtrl.y = _controlMX.position.y;
-					}else {
-						ctrl.matrix = _controlMX;
-					}
-				}
-			}else{
-				_root.x = _controlMX.position.x + this.getProjectionCenter().x;
-				_root.y = _controlMX.position.y + this.getProjectionCenter().y;
-			
-				_skinContainer.x = _root.x;
-				_skinContainer.y = _root.y;
-			}
-		}
-
-		//--------------------------------
-		//-------protected functions------
-		//--------------------------------
 		
 		/**
-		 * 目标是否有效
+		 * is target valid?
 		 * @param	target
 		 * @return
 		 */
 		public function isTargetValid(dp:DisplayObject):Boolean {
 			return !(dp == this || (dp && contains(dp)) || (dp is DisplayObjectContainer && (dp as DisplayObjectContainer).contains(this)));
+		}
+	
+		public function dispose():void {
+			onRemoved();
+			this.removeEventListener(Event.ADDED_TO_STAGE, onAdded);
+			this.removeEventListener(Event.REMOVED_FROM_STAGE, onRemoved);
+		}
+		
+		//--------------------------------
+		//-------protected functions------
+		//--------------------------------
+		
+		protected function interUpdate(controlMX:Matrix3D = null, deltaMX:Matrix3D = null):void {
+			if(controlMX == null){
+				var pos:Point = Util.local3DToTarget(_target, _innerReg, this); 
+				if (_mode == Transform3DMode.GLOBAL) {
+					_controlMX = new Matrix3D();
+					_controlMX.position = new Vector3D(pos.x, pos.y, 0);
+				}else if (_mode == Transform3DMode.INTERNAL) {
+					_controlMX = _concatenatedMX.clone();
+					_controlMX.position = new Vector3D(pos.x, pos.y, 0);
+				}
+			}else{
+				_controlMX = controlMX.clone();
+			}
+			
+			if(_inited){
+				updateControls(deltaMX);
+				_root.forceRender();
+			}
+		}
+		
+		protected function updateControls(deltaMX:Matrix3D = null):void {
+			if(deltaMX == null){
+				_deltaMx = _controlMX.clone();
+
+				//extract the delta transform data(exclue translation data)
+				var comps:Vector.<Vector3D> = new Vector.<Vector3D>(3);
+				comps[0] = new Vector3D(0, 0, 0, 0)
+				comps[1] = _deltaMx.decompose()[1].clone();
+				comps[2] = new Vector3D(1, 1, 1, 0);
+				_deltaMx.recompose(comps);
+			}else{
+				_deltaMx = deltaMX.clone();
+			}
+
+			_root.x = _controlMX.position.x;
+			_root.y = _controlMX.position.y;
+			
+			_skinContainer.x = _root.x;
+			_skinContainer.y = _root.y;
 		}
 		
 		protected function clear():void {
@@ -276,23 +299,16 @@
 			evt.stopImmediatePropagation();
 			evt.preventDefault();
 			
-			//注册点的改变事件在onChangeReg中处理。
+			//if the event target is _regCtrl, return, we handle it's event in onChangeReg
 			if (evt.target == _regCtrl) return;
 			
 			_targetMX = _originMX.clone();
-			
+	
 			this.onChangeControlValue(evt.target as DimentionControl);
-			
-			if (_target.parent.transform.matrix3D) {
-				var invertMatrix : Matrix3D = _target.parent.transform.getRelativeMatrix3D(_root);
-				invertMatrix.invert();
-				_targetMX.append(invertMatrix);
-			}
-			
-			_targetMX.append(_targetParentInvertMx);
-			
+		
 			_target.transform.matrix3D = _targetMX;
-			
+			_concatenatedMX = this.getConcatenatedMatrix3D();
+	
 			interUpdate();
 			this.dispatchEvent(new TransformEvent(TransformEvent.UPDATE));
 		}
@@ -303,8 +319,7 @@
 			evt.stopImmediatePropagation();
 			evt.preventDefault();
 			
-			_originMX = this.getConcatenatedMatrix3D();
-			_targetMX = _originMX.clone();
+			_originMX = _target.transform.matrix3D.clone();
 			
 			this.onActiveControl(evt.target as DimentionControl);
 		}
@@ -318,6 +333,9 @@
 			this.onDeactiveControl(evt.target as DimentionControl);
 			this.interUpdate();
 			this.dispatchEvent(new TransformEvent(TransformEvent.UPDATE));
+
+			_originMX = _target.transform.matrix3D.clone();
+
 		}
 		
 		protected function onChangeControlValue(ctrl:DimentionControl):void {
@@ -347,46 +365,55 @@
 			pt = this.globalToLocal(pt);
 			return pt;
 		}
-		
-		/**
-		 * 完全释放该对象
-		 */
-		public function dispose():void {
-			onRemoved();
-			this.removeEventListener(Event.ADDED_TO_STAGE, onAdded);
-			this.removeEventListener(Event.REMOVED_FROM_STAGE, onRemoved);
-		}
-		
+
 		private function getConcatenatedMatrix3D():Matrix3D {
 			var mx:Matrix3D = _target.transform.getRelativeMatrix3D(_root);
-			if(_target.parent.transform.matrix3D){
-				return mx
-			}else {
-				mx.appendTranslation(_root.x, _root.y, _root.z);
-				return mx;
-			}
+			return mx;
 		}
 		
 		private var sp:Shape;
-		private function caculateOutterReg():Vector3D {
+		protected function caculateOutterReg():Vector3D {
 			var parentMx:Matrix3D = _target.transform.getRelativeMatrix3D(_target.parent);
 			var pos:Vector3D = parentMx.transformVector(_innerReg);
-			
+
+			var pt:Point = _target.parent.local3DToGlobal(pos);
 			if(_debug){
 				if(sp == null){
 					sp = new Shape();
-					_target.parent.addChild(sp);
+					this.stage.addChild(sp);
 				}
 				sp.graphics.clear();
 				sp.graphics.beginFill(0xff0000);
-				sp.graphics.drawCircle(0,  0, 20);
+				sp.graphics.drawCircle(0,  0, 10);
 				sp.graphics.endFill();
-				sp.x = pos.x;
-				sp.y = pos.y;
-				sp.z = pos.z;
+				sp.x = pt.x;
+				sp.y = pt.y;
+			}else{
+				if(sp)sp.graphics.clear();
 			}
 			return pos;
 		}
+
+			
+		protected function getParentConcatenatedMatrix3D(target:DisplayObject):Matrix3D {
+			while (target) {
+				if (target.transform.matrix) {
+					var mx2d:Matrix = target.transform.matrix.clone();
+					target.z = 1;
+					var mx3d:Matrix3D = target.transform.getRelativeMatrix3D(this);
+					target.z = 0;
+					mx3d = target.transform.getRelativeMatrix3D(this);
+					target.transform.matrix = mx2d;
+					return mx3d;
+				}else {
+					target = target.parent;	
+				}
+			}
+			
+			return new Matrix3D();
+		}
+		
+
 	}
 
 }

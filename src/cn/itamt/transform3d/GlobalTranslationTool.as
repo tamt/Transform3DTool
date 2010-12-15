@@ -9,6 +9,7 @@ package cn.itamt.transform3d
 	import flash.geom.Rectangle;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
+	import flash.geom.Matrix3D;
 	
 	/**
 	 * ...
@@ -36,6 +37,8 @@ package cn.itamt.transform3d
 		
 		public function GlobalTranslationTool() 
 		{
+			_debug = false;
+			super();
 		}
 		
 		protected override function onAdded(evt:Event = null):void {
@@ -57,8 +60,8 @@ package cn.itamt.transform3d
 			_gCtrl = null;
 		}
 		
-		protected override function updateControls():void {
-			super.updateControls();
+		protected override function updateControls(deltaMX:Matrix3D = null):void {
+			super.updateControls(deltaMX);
 			
 			var rect:Rectangle = _target.getBounds(_gCtrl);
 			_gCtrl.targetRect = rect;
@@ -74,6 +77,8 @@ package cn.itamt.transform3d
 			
 				_targetMX.appendTranslation(_gCtrl.valueX * ratio, _gCtrl.valueY * ratio, 0);
 			}
+
+			_outReg = caculateOutterReg();
 		}
 		
 	}

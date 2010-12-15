@@ -4,7 +4,7 @@ package cn.itamt.transform3d.controls.rotation
 	import flash.display.Shape;
 	import flash.events.Event;
 	/**
-	 * ...
+	 * z rotation control, used in RotationTool for z rotation interaction
 	 * @author tamt
 	 */
 	public class ZRotationControl extends RotationDimentionControl

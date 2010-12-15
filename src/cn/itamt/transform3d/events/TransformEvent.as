@@ -3,7 +3,7 @@ package cn.itamt.transform3d.events
 	import flash.events.Event;
 	
 	/**
-	 * ...
+	 * events
 	 * @author tamt
 	 */
 	public class TransformEvent extends Event

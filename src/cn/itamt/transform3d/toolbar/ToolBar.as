@@ -5,7 +5,7 @@ package cn.itamt.transform3d.toolbar
 	import flash.events.Event;
 	
 	/**
-	 * ...
+	 * tool bar, use for contains Transform3DTool icon tool button, and mode icon button.
 	 * @author tamt
 	 */
 	public class ToolBar extends Sprite
@@ -124,8 +124,9 @@ package cn.itamt.transform3d.toolbar
 			
 			onAdded();
 		}
+
 		/**
-		 * 完全释放该对象
+		 * dispose object completely
 		 */
 		public function dispose():void {
 			onRemoved();

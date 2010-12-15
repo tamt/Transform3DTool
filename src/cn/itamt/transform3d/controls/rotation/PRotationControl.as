@@ -4,7 +4,7 @@ package cn.itamt.transform3d.controls.rotation
 	import flash.events.Event;
 	import net.badimon.five3D.utils.InternalUtils;
 	/**
-	 * ...
+	 * perspective rotation control.
 	 * @author tamt
 	 */
 	public class PRotationControl extends RotationDimentionControl

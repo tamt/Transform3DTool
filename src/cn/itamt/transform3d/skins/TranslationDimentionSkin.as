@@ -2,8 +2,9 @@ package cn.itamt.transform3d.skins
 {
 	import cn.itamt.transform3d.controls.Style;
 	import flash.geom.Point;
+
 	/**
-	 * ...
+	 * translation control skin, you can also custom the skin in Flash IDE.
 	 * @author tamt
 	 */
 	public class TranslationDimentionSkin extends DimentionSkin implements ITranslationDimentionSkin
@@ -50,7 +51,7 @@ package cn.itamt.transform3d.skins
 			var fx:Number = _arrowWidth - a;
 			var fy:Number = b;
 			
-			//绘制箭头
+			//draw arrow
 			graphics.beginFill(_style.borderColor, _style.borderAlpha);
 			graphics.moveTo(this._length + _arrowWidth, 0);
 			graphics.lineTo(this._length + a, fy);
@@ -61,7 +62,6 @@ package cn.itamt.transform3d.skins
 			graphics.drawEllipse(this._length - radius, -radius, _arrowHeight, _arrowHeight);
 			graphics.endFill();
 			
-			//绘制线
 			graphics.lineStyle(_style.borderThickness, _style.borderColor, _style.borderAlpha);
 			graphics.moveTo(0, 0);
 			graphics.lineTo(this.length, 0);

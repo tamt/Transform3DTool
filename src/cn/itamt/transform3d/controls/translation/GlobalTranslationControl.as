@@ -5,7 +5,7 @@ package cn.itamt.transform3d.controls.translation
 	import flash.geom.Rectangle;
 	
 	/**
-	 * ...
+	 * global traslation control
 	 * @author tamt
 	 */
 	public class GlobalTranslationControl extends DimentionControl

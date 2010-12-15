@@ -1,7 +1,7 @@
 package cn.itamt.transform3d.controls 
 {
 	/**
-	 * ...
+	 * style data
 	 * @author tamt
 	 */
 	public class Style

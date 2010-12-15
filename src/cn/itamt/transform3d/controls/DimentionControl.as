@@ -14,15 +14,15 @@ package cn.itamt.transform3d.controls
 	import net.badimon.five3D.display.Sprite3D;
 	
 	/**
-	 * ...
+	 * base class of x,y,z control
 	 * @author tamt
 	 */
 	public class DimentionControl extends Control
 	{
-		//鼠标拖动时显示值
+		//display valule text
 		public var showValue:Boolean;
 		
-		//该control的值
+		//value of this control
 		protected var _value:Number = 0;
 		public function get value():Number {
 			return _value;
@@ -157,10 +157,7 @@ package cn.itamt.transform3d.controls
 			
 			super.onRemoved(e);
 		}
-		
-		/**
-		 * 完全释放该对象
-		 */
+
 		override public function dispose():void {
 			onRemoved();
 			this.removeEventListener(Event.ADDED_TO_STAGE, onAdded);
@@ -324,7 +321,7 @@ package cn.itamt.transform3d.controls
 		//---------public functions-----
 		//------------------------------
 		/**
-		 * 设置该Control的鼠标指针
+		 * set this control's cursor when mouse interact
 		 * @param	dp
 		 */
 		public function setCursor(dp:DisplayObject):void {

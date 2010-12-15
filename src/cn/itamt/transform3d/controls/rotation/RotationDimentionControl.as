@@ -16,12 +16,12 @@ package cn.itamt.transform3d.controls.rotation
 	import net.badimon.five3D.utils.InternalUtils;
 	
 	/**
-	 * ...
+	 * base Class of x, y, z rotation controls
 	 * @author tamt
 	 */
 	public class RotationDimentionControl extends DimentionControl
 	{	
-		//显示内部坐标线
+		//show dimention line
 		public var showDimenLine:Boolean;
 		
 		protected var _radius:Number = 100;
@@ -39,12 +39,12 @@ package cn.itamt.transform3d.controls.rotation
 		protected var _startAngle3D:Number;
 		protected var _globalRegPoint:Point;
 		
-		//旋转的度数
+		//rotation in degree
 		public function get degree():Number {
 			return _value;
 		}
 		
-		//饼状图形的样式
+		//style of wedge
 		protected var _wedgeStyle:Style;
 		public function get wedgeStyle():Style {
 			return _wedgeStyle;
@@ -55,7 +55,7 @@ package cn.itamt.transform3d.controls.rotation
 		
 		
 		/**
-		 * 构造函数
+		 * constructor
 		 */
 		public function RotationDimentionControl() 
 		{
@@ -105,7 +105,7 @@ package cn.itamt.transform3d.controls.rotation
 			
 			this.graphics3D.beginFill(_wedgeStyle.fillColor, _wedgeStyle.fillAlpha);
 			
-			//计算该Control的值
+			//caculate the value of this control.
 			_value = Math.atan2(_mousePoint.y, _mousePoint.x) * Util.RADIAN - _startAngle;
 			
 			var showValueNum:int = int(_value);
@@ -120,7 +120,7 @@ package cn.itamt.transform3d.controls.rotation
 			
 			this.graphics3D.endFill();
 			
-			//显示度数
+			//update display the value degree, if showValue is true 
 			if (showValue) {
 				if (!_textfield.visible)_textfield.visible = true;
 				_textfield.text = Math.round(showValueNum).toString();

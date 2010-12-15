@@ -7,7 +7,7 @@ package cn.itamt.transform3d.controls.translation
 	import net.badimon.five3D.utils.InternalUtils;
 	
 	/**
-	 * ...
+	 * base Class of x, y, z translation control.
 	 * @author tamt
 	 */
 	public class TranslationDimentionControl extends DimentionControl
@@ -49,7 +49,7 @@ package cn.itamt.transform3d.controls.translation
 			var a:Number = a - b;
 			_value = Math.cos(a)*(Math.sqrt(pt.x * pt.x + pt.y * pt.y));
 			
-			//显示度数
+			//update display value textfield if showValue is true.
 			if (showValue) {
 				if (!_textfield.visible)_textfield.visible = true;
 				_textfield.text = Math.round(_value).toString();
