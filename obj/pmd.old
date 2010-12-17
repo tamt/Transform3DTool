@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<pmd version="4.2.1" timestamp="Thu Nov 11 17:45:08 CST 2010">
-   <file name="E:/flash/tamt2010/TransformTool3D/src/cn/itamt/transform3d/Main.as">
-      <violation beginline="13" endline="13" begincolumn="19" endcolumn="19" rule="adobe.ac.pmd.rules.performance.HeavyConstructor" ruleset="All Flex Rules" package="cn.itamt.transform3d" class="Main.as" externalInfoUrl="http://opensource.adobe.com/svn/opensource/flexpmd/bin/flex-pmd-ruleset-creator.html?rule=" priority="3">Constructor must be as lightweight as possible. No control statement allowed, whereas a cyclomatic complexe of 2 has been detected. The Just-In-Time compiler does not compile constructors. Make them as lightweight as possible, or move the complexity of the code to a method called by the constructor. Then the complexity will be compiled by the JIT</violation>
-      <violation beginline="13" endline="13" begincolumn="19" endcolumn="19" rule="adobe.ac.pmd.rules.style.ConstructorNonEmptyReturnType" ruleset="All Flex Rules" package="cn.itamt.transform3d" class="Main.as" externalInfoUrl="http://opensource.adobe.com/svn/opensource/flexpmd/bin/flex-pmd-ruleset-creator.html?rule=" priority="3">A constructor should not have a return type. Even if this is syntactically correct, there should not be a return type for a constructor</violation>
-   </file>
-</pmd>
