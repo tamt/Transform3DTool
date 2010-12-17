@@ -1,17 +1,14 @@
 package {
-	import cn.itamt.transform3d.consts.Transform3DMode;
-	import cn.itamt.transform3d.toolbar.ToolBar;
-	import cn.itamt.transform3d.toolbar.ToolButton;
+	import transform3d.consts.Transform3DMode;
+	import transform3d.consts.TransformToolMode;
+	import transform3d.toolbar.ToolBar;
+	import transform3d.toolbar.ToolButton;
 	
-	import cn.itamt.transform3d.*;
-	import cn.itamt.transform3d.controls.*;
-	import cn.itamt.transform3d.controls.rotation.*;
-	import cn.itamt.transform3d.controls.TransformControl;
-	import cn.itamt.transform3d.controls.translation.GlobalTranslationControl;
-	import cn.itamt.transform3d.controls.translation.XTranslationControl;
-	import cn.itamt.transform3d.controls.translation.YTranslationControl;
-	import cn.itamt.transform3d.cursors.*;
-	import cn.itamt.transform3d.events.TransformEvent;
+	import transform3d.*;
+	import transform3d.controls.*;
+	import transform3d.controls.rotation.*;
+	import transform3d.cursors.*;
+	import transform3d.events.TransformEvent;
 	import flash.display.*;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -40,6 +37,7 @@ package {
 		public var zcolor_cp:ColorPicker;
 		public var ocolor_cp:ColorPicker;
 		public var rect_cp:ColorPicker;
+		public var reg_cp:ColorPicker;
 		public var radius_sd:Slider;
 		public var size_sd:Slider;
 		public var arrow_w_sd:Slider;
@@ -52,7 +50,7 @@ package {
 		private var _bar:ToolBar;
 		
 		//
-		private var tool3d:Transform3DTool
+		private var tool3d:Transform3DTool;
 		
 		public function Tfm3DToolDemo():void 
 		{
@@ -61,6 +59,7 @@ package {
 			
 			test.rotationY = 20;
 			test.mc1.mc2.rotationY = -60;
+			test.mc1.mc2.rotationX = -20;
 			test.mc1.mc3.rotationZ = 20;
 			
 			//tool selector bar
@@ -106,9 +105,11 @@ package {
 			this.arrow_w_sd.value = tool3d.translationTool.arrowSize.x;
 			this.arrow_h_sd.value = tool3d.translationTool.arrowSize.y;
 			
-			xcolor_cp.selectedColor = tool3d.rotationTool.xControl.style.borderColor;
-			ycolor_cp.selectedColor = tool3d.rotationTool.yControl.style.borderColor;
-			zcolor_cp.selectedColor = tool3d.rotationTool.zControl.style.borderColor;
+			xcolor_cp.selectedColor = tool3d.xCtrlStyle.borderColor;
+			ycolor_cp.selectedColor = tool3d.yCtrlStyle.borderColor;
+			zcolor_cp.selectedColor = tool3d.zCtrlStyle.borderColor;
+			reg_cp.selectedColor = tool3d.regCtrlStyle.fillColor;
+			
 			ocolor_cp.selectedColor = tool3d.rotationTool.outCircleStyle.borderColor;
 			rect_cp.selectedColor = tool3d.globalTranslationTool.ctrl.style.borderColor;
 			
@@ -116,6 +117,7 @@ package {
 			xcolor_cp.addEventListener(Event.CHANGE, onConfigValueChange);
 			ycolor_cp.addEventListener(Event.CHANGE, onConfigValueChange);
 			zcolor_cp.addEventListener(Event.CHANGE, onConfigValueChange);
+			reg_cp.addEventListener(Event.CHANGE, onConfigValueChange);
 			ocolor_cp.addEventListener(Event.CHANGE, onConfigValueChange);
 			rect_cp.addEventListener(Event.CHANGE, onConfigValueChange);
 			radius_sd.addEventListener(Event.CHANGE, onConfigValueChange);
@@ -160,6 +162,10 @@ package {
 			}
 		}
 		
+		/**
+		 * select tool event
+		 * @param	evt
+		 */
 		protected function onClickToolButton(evt:MouseEvent):void {
 			if (evt.target is ToolButton) {
 				switch(evt.target) {
@@ -173,27 +179,22 @@ package {
 						}
 						break;
 					case _tToolBtn:
-						if (_tToolBtn.active) {
-							this.tool3d.tool = "rotation";
-							_tToolBtn.active = false;
-							_rToolBtn.active = true;
-						}else {
-							this.tool3d.tool = "translation";
-							_tToolBtn.active = true;
-							_rToolBtn.active = false;
-						}
+						_tToolBtn.active = !_tToolBtn.active;
 						break;
 					case _rToolBtn:
-						if (_rToolBtn.active) {
-							this.tool3d.tool = "translation";
-							_rToolBtn.active = false;
-							_tToolBtn.active = true;
-						}else {
-							this.tool3d.tool = "rotation";
-							_rToolBtn.active = true;
-							_tToolBtn.active = false;
-						}
+						_rToolBtn.active = !_rToolBtn.active;
 						break;
+				}
+				
+				if (_tToolBtn.active && _rToolBtn.active) {
+					tool3d.tool = TransformToolMode.ALL;
+				}else if (_tToolBtn.active) {
+					tool3d.tool = TransformToolMode.TRANSLATION;
+				}else if(_rToolBtn.active){
+					tool3d.tool = TransformToolMode.ROTATION;
+				}else{
+					tool3d.tool = TransformToolMode.ROTATION;
+					_rToolBtn.active = true;
 				}
 			}
 		}
@@ -202,16 +203,19 @@ package {
 			var style:Style;
 			switch(evt.target) {
 				case this.xcolor_cp:
-					tool3d.rotationTool.xControl.style = new Style(xcolor_cp.selectedColor, .7, xcolor_cp.selectedColor, 1, 2);
+					tool3d.xCtrlStyle = new Style(xcolor_cp.selectedColor, .7, xcolor_cp.selectedColor, 1, 2);
 					break;
 				case this.ycolor_cp:
-					tool3d.rotationTool.yControl.style = new Style(ycolor_cp.selectedColor, .7, ycolor_cp.selectedColor, 1, 2);
+					tool3d.yCtrlStyle = new Style(ycolor_cp.selectedColor, .7, ycolor_cp.selectedColor, 1, 2);
 					break;
 				case this.zcolor_cp:
-					tool3d.rotationTool.zControl.style = new Style(zcolor_cp.selectedColor, .7, zcolor_cp.selectedColor, 1, 2);
+					tool3d.zCtrlStyle = new Style(zcolor_cp.selectedColor, .7, zcolor_cp.selectedColor, 1, 2);
 					break;
 				case this.ocolor_cp:
 					tool3d.rotationTool.outCircleStyle = new Style(0, 0, ocolor_cp.selectedColor, .8, 2);
+					break;
+				case this.reg_cp:
+					tool3d.regCtrlStyle = new Style(this.reg_cp.selectedColor, 1, 0, 1, 1);
 					break;
 				case this.rect_cp:
 					tool3d.globalTranslationTool.ctrl.style = new Style(0, 0, this.rect_cp.selectedColor, 1, 1);
