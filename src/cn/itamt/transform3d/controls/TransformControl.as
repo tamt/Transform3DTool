@@ -1,10 +1,9 @@
 ﻿package cn.itamt.transform3d.controls 
 {
 	import cn.itamt.transform3d.controls.rotation.*;
-	import cn.itamt.transform3d.cursors.RegistrationControlCursor;
 	import cn.itamt.transform3d.events.TransformEvent;
-	import cn.itamt.transform3d.Transform3DMode;
-	import cn.itamt.transform3d.Util;
+	import cn.itamt.transform3d.consts.Transform3DMode;
+	import cn.itamt.transform3d.util.Util;
 	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -20,8 +19,6 @@
 	 */
 	public class TransformControl extends Sprite implements ITransformControl
 	{
-		protected var _debug:Boolean;
-		
 		//root container of controls
 		protected var _root:Scene3D;
 		//skin container of controls
@@ -75,6 +72,19 @@
 			}
 		}
 		
+		//regctrl cursor
+		protected var _regCursor:DisplayObject;
+		public function get regCursor():DisplayObject {
+			return _regCursor;
+		}
+		public function set regCursor(dp:DisplayObject):void {
+			_regCursor = dp;
+			if (_inited) {
+				_regCtrl.setCursor(_regCursor);
+			}
+		}
+		
+		
 		//target's origin mx3d, before transform.
 		protected var _originMX:Matrix3D;
 		//the mx3d will apply to target.
@@ -94,6 +104,10 @@
 		public function get deltaMX():Matrix3D{
 			return _deltaMx;
 		}
+		
+		protected var _originConcatenatedMX:Matrix3D;
+		protected var _originParentConcatenatedMX:Matrix3D;
+		
 		//
 		protected var _target:DisplayObject;
 		public function get target():DisplayObject {
@@ -128,15 +142,14 @@
 			_concatenatedMX = this.getConcatenatedMatrix3D();
 			_originMX = this._target.transform.matrix3D.clone();
 			_targetMX = _originMX.clone();
-						
+					
 			//caculate the default registration.
 			var internalRect:Rectangle = _target.getRect(_target);
 			var pt:Point = new Point(internalRect.left + internalRect.width / 2, internalRect.top + internalRect.height / 2);
 			_reg = _target.localToGlobal(pt);
-			_innerReg = _target.globalToLocal3D(_reg);
+			_innerReg = _target.globalToLocal3D(_reg);				
 			_outReg = this.caculateOutterReg();
 
-			
 			this.update();
 		}
 		
@@ -171,7 +184,7 @@
 		
 		protected function onAdded(evt:Event = null):void {
 			_regCtrl = new RegistrationControl();
-			_regCtrl.setCursor(new RegistrationControlCursor);
+			if(regCursor)_regCtrl.setCursor(regCursor);
 			_root.addChild(_regCtrl);
 			_ctrls.push(_regCtrl);
 						
@@ -279,8 +292,6 @@
 			_controlMX = null;
 			_root.visible = false;
 			_skinContainer.visible = false;
-			
-			if (sp) sp.graphics.clear();
 		}
 		
 		protected function onChangeReg(evt:Event):void {
@@ -351,6 +362,11 @@
 					ctrl.alpha = 1;
 				}
 			}
+			
+			if(_target){
+				_originConcatenatedMX = this.getConcatenatedMatrix3D();
+				_originParentConcatenatedMX = this.getParentConcatenatedMatrix3D(_target, _root);
+			}
 		}
 		
 		protected function onDeactiveControl(ctrl:DimentionControl):void {
@@ -366,50 +382,31 @@
 			return pt;
 		}
 
-		private function getConcatenatedMatrix3D():Matrix3D {
+		protected function getConcatenatedMatrix3D():Matrix3D {
 			var mx:Matrix3D = _target.transform.getRelativeMatrix3D(_root);
 			return mx;
 		}
 		
-		private var sp:Shape;
 		protected function caculateOutterReg():Vector3D {
 			var parentMx:Matrix3D = _target.transform.getRelativeMatrix3D(_target.parent);
 			var pos:Vector3D = parentMx.transformVector(_innerReg);
-
-			var pt:Point = _target.parent.local3DToGlobal(pos);
-			if(_debug){
-				if(sp == null){
-					sp = new Shape();
-					this.stage.addChild(sp);
-				}
-				sp.graphics.clear();
-				sp.graphics.beginFill(0xff0000);
-				sp.graphics.drawCircle(0,  0, 10);
-				sp.graphics.endFill();
-				sp.x = pt.x;
-				sp.y = pt.y;
-			}else{
-				if(sp)sp.graphics.clear();
-			}
 			return pos;
 		}
 
 			
-		protected function getParentConcatenatedMatrix3D(target:DisplayObject):Matrix3D {
-			while (target) {
-				if (target.transform.matrix) {
-					var mx2d:Matrix = target.transform.matrix.clone();
-					target.z = 1;
-					var mx3d:Matrix3D = target.transform.getRelativeMatrix3D(this);
-					target.z = 0;
-					mx3d = target.transform.getRelativeMatrix3D(this);
-					target.transform.matrix = mx2d;
-					return mx3d;
-				}else {
-					target = target.parent;	
-				}
+		protected function getParentConcatenatedMatrix3D(target:DisplayObject, relativeTo:DisplayObject):Matrix3D {
+			var p:DisplayObjectContainer = target.parent;
+			if (p.transform.matrix) {
+				var mx2d:Matrix = p.transform.matrix.clone();
+				p.z = 1;
+				p.z = 0;
+				var mx3d:Matrix3D = p.transform.getRelativeMatrix3D(relativeTo);
+				p.transform.matrix = mx2d;
+				return mx3d;
+			}else {
+				return p.transform.getRelativeMatrix3D(relativeTo);
 			}
-			
+						
 			return new Matrix3D();
 		}
 		

@@ -1,10 +1,12 @@
 package cn.itamt.transform3d 
 {
+	import cn.itamt.transform3d.consts.Transform3DMode;
 	import cn.itamt.transform3d.controls.*;
 	import cn.itamt.transform3d.cursors.*;
 	import cn.itamt.transform3d.controls.translation.*;
 	import cn.itamt.transform3d.skins.ITranslationDimentionSkin;
 	import cn.itamt.transform3d.skins.TranslationDimentionSkin;
+	import cn.itamt.transform3d.util.Util;
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -23,9 +25,77 @@ package cn.itamt.transform3d
 		protected var _yCtrl:YTranslationControl;
 		protected var _zCtrl:ZTranslationControl;
 		
+		//---------------------------
+		//cursors
+		//---------------------------
+		//xctrl cursor
+		protected var _xCursor:DisplayObject;
+		public function get xCursor():DisplayObject {
+			return _xCursor;
+		}
+		public function set xCursor(dp:DisplayObject):void {
+			_xCursor = dp;
+			if (_inited) {
+				_xCtrl.setCursor(_xCursor);
+			}
+		}
+		
+		//yctrl cursor
+		protected var _yCursor:DisplayObject;
+		public function get yCursor():DisplayObject {
+			return _yCursor;
+		}
+		public function set yCursor(dp:DisplayObject):void {
+			_yCursor = dp;
+			if (_inited) {
+				_yCtrl.setCursor(_yCursor);
+			}
+		}
+		//zctrl cursor
+		protected var _zCursor:DisplayObject;
+		public function get zCursor():DisplayObject {
+			return _zCursor;
+		}
+		public function set zCursor(dp:DisplayObject):void {
+			_zCursor = dp;
+			if (_inited) {
+				_zCtrl.setCursor(_zCursor);
+			}
+		}
+		
+		//---------------------
+		//skins
+		//---------------------
 		protected var _xSkin:DisplayObject;
 		protected var _ySkin:DisplayObject;
 		protected var _zSkin:DisplayObject;
+		
+		//---------------------
+		//size, arrow size;
+		//---------------------
+		protected var _size:Number = 80;
+		public function get size():Number {
+			return _size;
+		}
+		public function set size(val:Number):void {
+			_size = val;
+			if (_inited) {
+				_xCtrl.length = _yCtrl.length = _zCtrl.length = _size;
+				this.updateControls();
+			}
+		}
+		private var _arrowSize:Point = new Point(15, 12);
+		public function set arrowSize(val:Point):void {
+			_arrowSize = val;
+			if (_inited) {
+				if (_xSkin is TranslationDimentionSkin)(_xSkin as TranslationDimentionSkin).arrowSize = _arrowSize;
+				if (_ySkin is TranslationDimentionSkin)(_ySkin as TranslationDimentionSkin).arrowSize = _arrowSize;
+				if (_zSkin is TranslationDimentionSkin)(_zSkin as TranslationDimentionSkin).arrowSize = _arrowSize;
+			}
+		}
+		public function get arrowSize():Point {
+			return _arrowSize;
+		}
 		
 		public function TranslationTool() 
 		{
@@ -37,17 +107,17 @@ package cn.itamt.transform3d
 			_zCtrl = new ZTranslationControl();
 			_ctrls = [_xCtrl, _yCtrl, _zCtrl];
 			
-			_xCtrl.setCursor(new XControlCursor);
-			_yCtrl.setCursor(new YControlCursor);
-			_zCtrl.setCursor(new ZControlCursor);
+			if(xCursor)_xCtrl.setCursor(xCursor);
+			if(yCursor)_yCtrl.setCursor(yCursor);
+			if(zCursor)_zCtrl.setCursor(zCursor);
 			
 			_root.addChild(_xCtrl);
 			_root.addChild(_yCtrl);
 			_root.addChild(_zCtrl);
 			
-			if(_xSkin == null)_xSkin = new TranslationDimentionSkin(_xCtrl.style.borderColor);
-			if(_ySkin == null)_ySkin = new TranslationDimentionSkin(_yCtrl.style.borderColor);
-			if(_zSkin == null)_zSkin = new TranslationDimentionSkin(_zCtrl.style.borderColor);
+			if(_xSkin == null)_xSkin = new TranslationDimentionSkin(_xCtrl.style.borderColor, this.size, arrowSize.x, arrowSize.y);
+			if(_ySkin == null)_ySkin = new TranslationDimentionSkin(_yCtrl.style.borderColor, this.size, arrowSize.x, arrowSize.y);
+			if(_zSkin == null)_zSkin = new TranslationDimentionSkin(_zCtrl.style.borderColor, this.size, arrowSize.x, arrowSize.y);
 			
 			_xCtrl.skin = _xSkin;
 			_yCtrl.skin = _ySkin;
@@ -101,7 +171,12 @@ package cn.itamt.transform3d
 			if (_mode == Transform3DMode.INTERNAL) {
 				_targetMX.prependTranslation(xdist, ydist, zdist);
 			}else if (_mode == Transform3DMode.GLOBAL) {
-				_targetMX.appendTranslation(xdist, ydist, zdist);
+				var mx:Matrix3D = this._originConcatenatedMX.clone();
+				mx.appendTranslation(xdist, ydist, zdist);
+				var parentMX:Matrix3D = _originParentConcatenatedMX.clone();
+				parentMX.invert();
+				mx.append(parentMX);
+				_targetMX = mx.clone();
 			}
 		}
 		

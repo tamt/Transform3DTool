@@ -1,4 +1,4 @@
-package cn.itamt.transform3d
+package cn.itamt.transform3d.util
 {
 	import flash.display.DisplayObject;
 	import flash.display.Graphics;
@@ -209,37 +209,6 @@ package cn.itamt.transform3d
 			//if (target.parent) {
 				//converTo3DDisplayObject(target.parent);
 			//}
-		}
-		
-		public static function get3DObjectConcatenatedMatrix(target:DisplayObject):Matrix {
-			while (target && !(target is Stage)) {
-				if (target.transform.matrix) {
-					return target.transform.concatenatedMatrix;
-				}else {
-					target = target.parent;	
-				}
-			}
-			
-			return new Matrix();
-		}
-		
-		
-		public static function getParentConcatenatedMatrix3D(target:DisplayObject):Matrix3D {
-			while (target && !(target is Stage)) {
-				if (target.transform.matrix) {
-					var mx2d:Matrix = target.transform.matrix.clone();
-					target.z = 1;
-					var mx3d:Matrix3D = target.transform.getRelativeMatrix3D(target.root);
-					target.z = 0;
-					mx3d = target.transform.getRelativeMatrix3D(target.root);
-					target.transform.matrix = mx2d;
-					return mx3d;
-				}else {
-					target = target.parent;	
-				}
-			}
-			
-			return new Matrix3D();
 		}
 		
 	}

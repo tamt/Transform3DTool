@@ -1,7 +1,7 @@
 package cn.itamt.transform3d.controls 
 {
 	import cn.itamt.transform3d.cursors.CustomMouseCursor;
-	import cn.itamt.transform3d.Transform3DMode;
+	import cn.itamt.transform3d.consts.Transform3DMode;
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.display.Shape;
@@ -54,6 +54,7 @@ package cn.itamt.transform3d.controls
 		}
 		public function set style(val:Style):void{
 			_style = val;
+			if (_inited) this.draw();
 		}
 		
 		//

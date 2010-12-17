@@ -2,8 +2,8 @@ package cn.itamt.transform3d.controls.rotation
 {
 	import cn.itamt.transform3d.controls.DimentionControl;
 	import cn.itamt.transform3d.controls.Style;
-	import cn.itamt.transform3d.Transform3DMode;
-	import cn.itamt.transform3d.Util;
+	import cn.itamt.transform3d.consts.Transform3DMode;
+	import cn.itamt.transform3d.util.Util;
 	import flash.display.Shape;
 	import flash.events.Event;
 	import flash.filters.GlowFilter;
@@ -44,14 +44,21 @@ package cn.itamt.transform3d.controls.rotation
 			return _value;
 		}
 		
+		public override function set style(val:Style):void{
+			_style = val;
+			_wedgeStyle = new Style(_style.fillColor, _style.fillAlpha);
+			if (_inited) this.draw();
+		}
+		
 		//style of wedge
 		protected var _wedgeStyle:Style;
-		public function get wedgeStyle():Style {
-			return _wedgeStyle;
-		}
-		public function set wedgeStyle(style:Style):void {
-			_wedgeStyle = style;
-		}
+		//public function get wedgeStyle():Style {
+			//return _wedgeStyle;
+		//}
+		//public function set wedgeStyle(style:Style):void {
+			//_wedgeStyle = style;
+			//if (_inited) this.draw();
+		//}
 		
 		
 		/**
@@ -60,11 +67,12 @@ package cn.itamt.transform3d.controls.rotation
 		public function RotationDimentionControl() 
 		{
 			super();
-			_wedgeStyle = new Style(0x0000ff, .8, 0x000000, 0);
 			_style.borderThickness = 1.5;
+			_wedgeStyle = new Style(_style.fillColor, _style.fillAlpha);
 		}
 		
-		override protected function onAdded(evt:Event = null):void {			
+		override protected function onAdded(evt:Event = null):void {
+			_wedgeStyle = new Style(_style.fillColor, _style.fillAlpha);
 			super.onAdded(evt);
 		}
 		

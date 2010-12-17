@@ -1,6 +1,8 @@
 package cn.itamt.transform3d.cursors 
 {
 	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
+	import flash.display.InteractiveObject;
 	import flash.display.Sprite;
 	import flash.display.Stage;
 	import flash.events.Event;
@@ -52,6 +54,8 @@ package cn.itamt.transform3d.cursors
 				}
 				
 				_cursor = cursor;
+				if (_cursor is InteractiveObject)(_cursor as InteractiveObject).mouseEnabled = false;
+				if (_cursor is Sprite)(_cursor as Sprite).mouseChildren = false;
 				_stage.addChild(_cursor);
 				startTrackMouse();
 			}

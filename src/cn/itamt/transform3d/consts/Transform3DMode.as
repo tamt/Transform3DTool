@@ -1,4 +1,4 @@
-package cn.itamt.transform3d 
+package cn.itamt.transform3d.consts
 {
 	/**
 	 * ...

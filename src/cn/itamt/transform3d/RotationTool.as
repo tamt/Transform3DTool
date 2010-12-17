@@ -3,6 +3,8 @@ package cn.itamt.transform3d
 	import cn.itamt.transform3d.controls.*;
 	import cn.itamt.transform3d.controls.rotation.*;
 	import cn.itamt.transform3d.cursors.*;
+	import cn.itamt.transform3d.util.Util;
+	import cn.itamt.transform3d.consts.Transform3DMode;
 	import flash.display.DisplayObject;
 	import flash.display.Shape;
 	import flash.display.Sprite;
@@ -17,22 +19,139 @@ package cn.itamt.transform3d
 	public class RotationTool extends TransformControl
 	{
 		protected var _radius:Number = 50;
+		public function get radius():Number {
+			return _radius;
+		}
+		public function set radius(val:Number):void {
+			_radius = val;
+			if(_inited){
+				_xCtrl.radius = _yCtrl.radius = _zCtrl.radius = _radius;
+				_pCtrl.radius = _radius + 10;
+				
+				if (showOutCircle && target) this.drawOutCircle();
+				
+				this.buildControlMask(_xMask);
+				this.buildControlMask(_yMask);
+				this.buildControlMask(_zMask);
+			}
+		}
 		
+		//---------------------------
+		//controls
+		//---------------------------
 		protected var _xCtrl:XRotationControl;
+		public function get xControl():XRotationControl {
+			return _xCtrl;
+		}
 		protected var _yCtrl:YRotationControl;
+		public function get yControl():YRotationControl {
+			return _yCtrl;
+		}
 		protected var _zCtrl:ZRotationControl;
+		public function get zControl():ZRotationControl {
+			return _zCtrl;
+		}
 		protected var _pCtrl:PRotationControl;
+		public function get pControl():PRotationControl {
+			return _pCtrl;
+		}
 		
+		//---------------------------
+		//cursors
+		//---------------------------
+		//xctrl cursor
+		protected var _xCursor:DisplayObject;
+		public function get xCursor():DisplayObject {
+			return _xCursor;
+		}
+		public function set xCursor(dp:DisplayObject):void {
+			_xCursor = dp;
+			if (_inited) {
+				_xCtrl.setCursor(_xCursor);
+			}
+		}
+		
+		//yctrl cursor
+		protected var _yCursor:DisplayObject;
+		public function get yCursor():DisplayObject {
+			return _yCursor;
+		}
+		public function set yCursor(dp:DisplayObject):void {
+			_yCursor = dp;
+			if (_inited) {
+				_yCtrl.setCursor(_yCursor);
+			}
+		}
+		//zctrl cursor
+		protected var _zCursor:DisplayObject;
+		public function get zCursor():DisplayObject {
+			return _zCursor;
+		}
+		public function set zCursor(dp:DisplayObject):void {
+			_zCursor = dp;
+			if (_inited) {
+				_zCtrl.setCursor(_zCursor);
+			}
+		}
+		//pctrl cursor
+		protected var _pCursor:DisplayObject;
+		public function get pCursor():DisplayObject {
+			return _pCursor;
+		}
+		public function set pCursor(dp:DisplayObject):void {
+			_pCursor = dp;
+			if (_inited) {
+				_pCtrl.setCursor(_pCursor);
+			}
+		}
+		
+		//---------------------------
+		//mask
+		//---------------------------
+		//show full circle rotation control, or half circle.
+		private var _showFullControl:Boolean = false;
+		public function get showFullControl():Boolean {
+			return _showFullControl;
+		}
+		public function set showFullControl(val:Boolean):void {
+			_showFullControl = val;
+			if (_inited) {
+				if (_showFullControl) {
+					this.clearMask();
+				}else {
+					if(_canUseMask)this.applyMask();
+				}
+			}
+		}
+		//make use of mask for haflf circle control effect, _canUseMask implement wether can use mask in current context.
+		private var _canUseMask:Boolean;
 		protected var _xMask:Shape;
 		protected var _yMask:Shape;
 		protected var _zMask:Shape;
 		protected var _maskContainer:Sprite;
 		
-		//show full circle rotation control, or half circle.
-		private var _showFullControl:Boolean;
-		//make use of mask for haflf circle control effect, _canUseMask implement wether can use mask in current context.
-		private var _canUseMask:Boolean;
+		//---------------------------
+		//out circle
+		//---------------------------
+		private var _outCircle:Shape;
+		private var _outCircleStyle:Style = new Style(0, 0, 0x0, .7, 2);
+		public function get outCircleStyle():Style {
+			return _outCircleStyle;
+		}
+		public function set outCircleStyle(val:Style):void {
+			_outCircleStyle = val;
+			if (_inited && showOutCircle && target) this.drawOutCircle();
+		}
+		private var _showOutCircle:Boolean = true;
+		public function get showOutCircle():Boolean {
+			return _showOutCircle;
+		}
+		public function set showOutCircle(val:Boolean):void {
+			_showOutCircle = val;
+			_outCircle.visible = _showOutCircle;
+		}
 		
+		//-----------------------------
 		public override function set mode(val:uint):void {
 			if (Transform3DMode.isInvalidMode(val)) return;
 			_mode = val;
@@ -68,10 +187,10 @@ package cn.itamt.transform3d
 			_xCtrl.radius = _yCtrl.radius = _zCtrl.radius = _radius;
 			_pCtrl.radius = _radius + 10;
 			
-			_xCtrl.setCursor(new XControlCursor);
-			_yCtrl.setCursor(new YControlCursor);
-			_zCtrl.setCursor(new ZControlCursor);
-			_pCtrl.setCursor(new PControlCursor);
+			if(xCursor)_xCtrl.setCursor(xCursor);
+			if(yCursor)_yCtrl.setCursor(yCursor);
+			if(zCursor)_zCtrl.setCursor(zCursor);
+			if(pCursor)_pCtrl.setCursor(pCursor);
 			
 			_xCtrl.name = "x";
 			_yCtrl.name = "y";
@@ -83,7 +202,6 @@ package cn.itamt.transform3d
 			_root.addChild(_zCtrl);
 			_root.addChild(_pCtrl);
 			
-			
 			//--------------------------------------------
 			//-----for half circle control effect---------
 			//--------------------------------------------
@@ -91,16 +209,28 @@ package cn.itamt.transform3d
 			this._maskContainer.mouseEnabled = false;
 			this.addChild(this._maskContainer);
 			
-			_xMask = this.buildControlMask();
+			_xMask = new Shape();
+			this.buildControlMask(_xMask);
 			this._maskContainer.addChild(_xMask);
 			
-			_yMask = this.buildControlMask();
+			_yMask = new Shape();
+			this.buildControlMask(_yMask);
 			this._maskContainer.addChild(_yMask);
 			
-			_zMask = this.buildControlMask();
+			_zMask = new Shape();
+			this.buildControlMask(_zMask);
 			this._maskContainer.addChild(_zMask);
 			//---------------------------------------
 			
+			//---------------------------------------
+			//-----draw out circle;
+			//---------------------------------------
+			_outCircle = new Shape();
+			addChild(_outCircle);
+			this.drawOutCircle();
+			showOutCircle = _showOutCircle;
+			
+			//
 			super.onAdded(evt);
 		}
 		
@@ -115,6 +245,9 @@ package cn.itamt.transform3d
 			
 			removeChild(this._maskContainer);
 			this._maskContainer = null;
+			
+			removeChild(this._outCircle);
+			_outCircle = null;
 			
 			_root.removeChild(_xCtrl);
 			_root.removeChild(_yCtrl);
@@ -178,26 +311,30 @@ package cn.itamt.transform3d
 				
 				_targetMX.prependTranslation( -_innerReg.x, -_innerReg.y, -_innerReg.z);
 			}else if (_mode == Transform3DMode.GLOBAL) {
-			
-				_targetMX.appendTranslation(-_outReg.x,-_outReg.y,-_outReg.z);
-				
+				var mx:Matrix3D = this._originConcatenatedMX.clone();
+				var reg:Vector3D = mx.transformVector(_innerReg);
+				mx.appendTranslation(-reg.x, -reg.y, -reg.z);
 				switch(ctrl) {
 					case _xCtrl:
-						_targetMX.appendRotation(_xCtrl.degree, Vector3D.X_AXIS);
+						mx.appendRotation(_xCtrl.degree, Vector3D.X_AXIS);
 						break;
 					case _yCtrl:
-						_targetMX.appendRotation(_yCtrl.degree, Vector3D.Y_AXIS);
+						mx.appendRotation(_yCtrl.degree, Vector3D.Y_AXIS);
 						break;
 					case _zCtrl:
-						_targetMX.appendRotation(_zCtrl.degree, Vector3D.Z_AXIS);
+						mx.appendRotation(_zCtrl.degree, Vector3D.Z_AXIS);
 						break;
 					case _pCtrl:
-						_targetMX.appendRotation(_pCtrl.degreeX, Vector3D.X_AXIS);
-						_targetMX.appendRotation(_pCtrl.degreeY, Vector3D.Y_AXIS);
+						mx.appendRotation(_pCtrl.degreeX, Vector3D.X_AXIS);
+						mx.appendRotation(_pCtrl.degreeY, Vector3D.Y_AXIS);
 						break;
 				}
-				_targetMX.appendTranslation(_outReg.x,_outReg.y,_outReg.z);
+				mx.appendTranslation(reg.x, reg.y, reg.z);
 				
+				var parentMX:Matrix3D = _originParentConcatenatedMX.clone();
+				parentMX.invert();
+				mx.append(parentMX);
+				_targetMX = mx.clone();
 			}
 		}
 		
@@ -210,6 +347,10 @@ package cn.itamt.transform3d
 					ctrl.matrix = _deltaMx;
 				}
 			}
+			
+			this._outCircle.x = _root.x;
+			this._outCircle.y = _root.y;
+			this.drawOutCircle();
 			
 			this._maskContainer.x = _root.x;
 			this._maskContainer.y = _root.y;
@@ -261,15 +402,11 @@ package cn.itamt.transform3d
 			}
 		}
 		
-		private function buildControlMask():Shape {
-			var shape:Shape = new Shape();
+		private function buildControlMask(shape:Shape):void {
 			shape.graphics.beginFill(0xffffff, .5);
 			shape.graphics.drawRect(-_radius*2, -_radius*2, 4*_radius, _radius*2+1);
 			shape.graphics.endFill();
-			
 			shape.visible = false;
-			
-			return shape;
 		}
 		
 		/**
@@ -316,13 +453,24 @@ package cn.itamt.transform3d
 					_zCtrl.shape.mask = _zMask;
 			}
 			
-			this._maskContainer.graphics.clear();
-			this._maskContainer.graphics.lineStyle(2, 0, .7);
-			this._maskContainer.graphics.drawCircle(0, 0, _radius);
+		}
+		
+		/**
+		 * draw out circle of controls
+		 */
+		private function drawOutCircle():void {
+			if (this._outCircle){
+				this._outCircle.graphics.clear();
+				this._outCircle.graphics.lineStyle(_outCircleStyle.borderThickness, _outCircleStyle.borderColor, _outCircleStyle.borderAlpha);
+				this._outCircle.graphics.beginFill(_outCircleStyle.fillColor, _outCircleStyle.fillAlpha);
+				this._outCircle.graphics.drawCircle(0, 0, _radius + .5);
+				this._outCircle.graphics.endFill();
+			}
 		}
 		
 		protected override function clear():void {
 			if(this._maskContainer)this._maskContainer.graphics.clear();
+			if (this._outCircle)this._outCircle.graphics.clear();
 			
 			super.clear();
 		}

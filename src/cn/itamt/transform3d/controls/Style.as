@@ -23,6 +23,10 @@ package cn.itamt.transform3d.controls
 			this.borderThickness = bThickness;
 		}
 		
+		public function clone():Style {
+			return new Style(this.fillColor, this.fillAlpha, this.borderColor, this.borderAlpha, this.borderThickness);
+		}
+		
 	}
 
 }

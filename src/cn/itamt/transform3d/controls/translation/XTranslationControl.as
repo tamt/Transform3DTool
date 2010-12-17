@@ -1,7 +1,7 @@
 package cn.itamt.transform3d.controls.translation 
 {
-	import cn.itamt.transform3d.Transform3DMode;
-	import cn.itamt.transform3d.Util;
+	import cn.itamt.transform3d.consts.Transform3DMode;
+	import cn.itamt.transform3d.util.Util;
 	import net.badimon.five3D.display.Scene3D;
 	import net.badimon.five3D.utils.InternalUtils;
 	import flash.geom.Matrix3D;

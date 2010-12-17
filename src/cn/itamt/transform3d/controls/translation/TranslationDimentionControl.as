@@ -1,7 +1,7 @@
 package cn.itamt.transform3d.controls.translation 
 {
 	import cn.itamt.transform3d.controls.DimentionControl;
-	import cn.itamt.transform3d.Util;
+	import cn.itamt.transform3d.util.Util;
 	import flash.display.Sprite;
 	import flash.geom.Point;
 	import net.badimon.five3D.utils.InternalUtils;
@@ -17,6 +17,9 @@ package cn.itamt.transform3d.controls.translation
 		protected var _length:Number = 80;
 		public function get length():Number {
 			return _length;
+		}
+		public function set length(val:Number):void {
+			_length = val;
 		}
 		
 		public function get distance():Number {

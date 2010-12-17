@@ -1,6 +1,7 @@
 package cn.itamt.transform3d.controls.rotation 
 {
-	import cn.itamt.transform3d.Transform3DMode;
+	import cn.itamt.transform3d.controls.Style;
+	import cn.itamt.transform3d.consts.Transform3DMode;
 	import flash.display.Shape;
 	import flash.events.Event;
 	/**
@@ -13,8 +14,7 @@ package cn.itamt.transform3d.controls.rotation
 		public function ZRotationControl() 
 		{
 			super();
-			_wedgeStyle.fillColor = 0x0000ff;
-			_style.borderColor = 0x0000ff;
+			style = new Style(0x0000ff, .7, 0x0000ff, .9,  1.5);
 		}
 		
 		protected override function draw():void {

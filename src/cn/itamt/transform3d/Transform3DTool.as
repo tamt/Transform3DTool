@@ -1,5 +1,6 @@
 package cn.itamt.transform3d 
 {
+	import cn.itamt.transform3d.consts.Transform3DMode;
 	import cn.itamt.transform3d.controls.Control;
 	import cn.itamt.transform3d.controls.ITransformControl;
 	import cn.itamt.transform3d.controls.TransformControl;
@@ -20,7 +21,7 @@ package cn.itamt.transform3d
 	import flash.geom.Rectangle;
 	
 	/**
-	 * ...
+	 * Transform3DTool
 	 * @author tamt
 	 */
 	public class Transform3DTool extends Control implements ITransformControl
@@ -35,6 +36,10 @@ package cn.itamt.transform3d
 		
 		public function get translationTool():TranslationTool {
 			return _tTool;
+		}
+		
+		public function get globalTranslationTool():GlobalTranslationTool {
+			return _gTool;
 		}
 		
 		//tool selector bar

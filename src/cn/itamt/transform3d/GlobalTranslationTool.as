@@ -3,9 +3,9 @@ package cn.itamt.transform3d
 	import cn.itamt.transform3d.controls.DimentionControl;
 	import cn.itamt.transform3d.controls.TransformControl;
 	import cn.itamt.transform3d.controls.translation.GlobalTranslationControl;
-	import cn.itamt.transform3d.cursors.GlobalTranslationCursor;
-	import cn.itamt.transform3d.cursors.RegistrationControlCursor;
+	import cn.itamt.transform3d.util.Util;
 	import flash.display.DisplayObject;
+	import flash.geom.Orientation3D;
 	import flash.geom.Rectangle;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
@@ -18,6 +18,21 @@ package cn.itamt.transform3d
 	public class GlobalTranslationTool extends TransformControl
 	{
 		protected var _gCtrl:GlobalTranslationControl;
+		public function get ctrl():GlobalTranslationControl {
+			return _gCtrl;
+		}
+		
+		//mouse cursor
+		private var _cursor:DisplayObject;
+		public function get cursor():DisplayObject {
+			return _cursor;
+		}
+		public function set cursor(val:DisplayObject):void {
+			_cursor = val;
+			if (_inited) {
+				_gCtrl.setCursor(_cursor);
+			}
+		}
 		
 		public override function set target(dp:DisplayObject):void {
 			if (!isTargetValid(dp)) {
@@ -37,7 +52,6 @@ package cn.itamt.transform3d
 		
 		public function GlobalTranslationTool() 
 		{
-			_debug = false;
 			super();
 		}
 		
@@ -45,7 +59,7 @@ package cn.itamt.transform3d
 			_gCtrl = new GlobalTranslationControl();
 			_ctrls = [_gCtrl];
 			
-			_gCtrl.setCursor(new GlobalTranslationCursor);
+			if(cursor)_gCtrl.setCursor(cursor);
 			_root.addChild(_gCtrl);
 			
 			super.onAdded(evt);
@@ -59,7 +73,7 @@ package cn.itamt.transform3d
 			_gCtrl.dispose();
 			_gCtrl = null;
 		}
-		
+				
 		protected override function updateControls(deltaMX:Matrix3D = null):void {
 			super.updateControls(deltaMX);
 			
@@ -69,13 +83,17 @@ package cn.itamt.transform3d
 	
 		protected override function onChangeControlValue(ctrl:DimentionControl):void {
 			if (ctrl == _gCtrl) {
+				//var focalLen:Number = _target.root.transform.perspectiveProjection.focalLength;
+				//var ratio:Number = Math.sin(_target.root.transform.perspectiveProjection.fieldOfView * .5 / Util.RADIAN);
+				//var pos:Vector3D = _target.transform.matrix3D.position;
+				//ratio = (focalLen + pos.z) / focalLen ;
 				
-				var focalLen:Number = _target.root.transform.perspectiveProjection.focalLength;
-				var ratio:Number = Math.sin(_target.root.transform.perspectiveProjection.fieldOfView * .5 / Util.RADIAN);
-				var pos:Vector3D = _target.transform.matrix3D.position;
-				ratio = (focalLen + pos.z)/focalLen ;
-			
-				_targetMX.appendTranslation(_gCtrl.valueX * ratio, _gCtrl.valueY * ratio, 0);
+				var mx:Matrix3D = this._originConcatenatedMX.clone();
+				mx.appendTranslation(_gCtrl.valueX, _gCtrl.valueY, 0);
+				var parentMX:Matrix3D = _originParentConcatenatedMX.clone();
+				parentMX.invert();
+				mx.append(parentMX);
+				_targetMX = mx.clone();
 			}
 
 			_outReg = caculateOutterReg();

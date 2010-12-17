@@ -1,7 +1,8 @@
 package cn.itamt.transform3d.controls.rotation 
 {
-	import cn.itamt.transform3d.Transform3DMode;
-	import cn.itamt.transform3d.Util;
+	import cn.itamt.transform3d.controls.Style;
+	import cn.itamt.transform3d.consts.Transform3DMode;
+	import cn.itamt.transform3d.util.Util;
 	import flash.display.Shape;
 	import flash.events.Event;
 	import flash.geom.Matrix3D;
@@ -18,8 +19,7 @@ package cn.itamt.transform3d.controls.rotation
 		public function XRotationControl() 
 		{
 			super();
-			_wedgeStyle.fillColor = 0xff0000;
-			_style.borderColor = 0xff0000;
+			style = new Style(0xff0000, .7, 0xff0000, .9,  1.5);
 		}
 		
 		protected override function draw():void {

@@ -1,8 +1,8 @@
 package cn.itamt.transform3d.controls.translation 
 {
-	import cn.itamt.transform3d.Transform3DMode;
+	import cn.itamt.transform3d.consts.Transform3DMode;
 	import flash.geom.Point;
-	import cn.itamt.transform3d.Util;
+	import cn.itamt.transform3d.util.Util;
 	import net.badimon.five3D.display.Scene3D;
 	import net.badimon.five3D.utils.InternalUtils;
 	/**
@@ -11,7 +11,6 @@ package cn.itamt.transform3d.controls.translation
 	 */
 	public class YTranslationControl extends TranslationDimentionControl
 	{
-		
 		public function YTranslationControl() 
 		{
 			super();
