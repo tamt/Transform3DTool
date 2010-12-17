@@ -7,8 +7,6 @@ package cn.itamt.transform3d
 	import cn.itamt.transform3d.controls.translation.GlobalTranslationControl;
 	import cn.itamt.transform3d.cursors.CustomMouseCursor;
 	import cn.itamt.transform3d.events.TransformEvent;
-	import cn.itamt.transform3d.toolbar.ToolBar;
-	import cn.itamt.transform3d.toolbar.ToolButton;
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
@@ -41,13 +39,7 @@ package cn.itamt.transform3d
 		public function get globalTranslationTool():GlobalTranslationTool {
 			return _gTool;
 		}
-		
-		//tool selector bar
-		protected var _tToolBtn:ToolButton;
-		protected var _rToolBtn:ToolButton;
-		protected var _modeBtn:ToolButton;
-		private var _bar:ToolBar;
-		
+				
 		protected var _mode:uint = Transform3DMode.INTERNAL;
 		public function get mode():uint {
 			return _mode;
@@ -59,27 +51,21 @@ package cn.itamt.transform3d
 			_rTool.mode = _mode;
 			_tTool.mode = _mode;
 			_gTool.mode = _mode;
-			
-			_modeBtn.active = _mode != Transform3DMode.INTERNAL;
 		}
 		
 		protected var _tool:String = "rotation";
-		internal function get tool():String {
+		public function get tool():String {
 			return _tool;
 		}
-		internal function set tool(val:String):void {
+		public function set tool(val:String):void {
 			if (val != "rotation" && val != "translation") return;
 			
 			_tool = val;
 			if (_tool == "rotation") {
-				_rToolBtn.active = true;
 				if (!this.contains(_rTool)) addChild(_rTool);
-				_tToolBtn.active = false;
 				if (this.contains(_tTool)) removeChild(_tTool);
 			}else if (_tool == "translation") {
-				_rToolBtn.active = false;
 				if (this.contains(_rTool)) removeChild(_rTool);
-				_tToolBtn.active = true;
 				if (!this.contains(_tTool)) addChild(_tTool);
 			}
 		}
@@ -95,16 +81,6 @@ package cn.itamt.transform3d
 			_rTool.target = _target;
 			_tTool.target = _target;
 			_gTool.target = _target;
-			
-			if(_target){
-				var rect:Rectangle = _target.getBounds(this);
-				_bar.x = rect.x;
-				_bar.y = rect.bottom;
-				_bar.width = rect.width;
-				if (!_bar.visible)_bar.visible = true;
-			}else {
-				_bar.visible = false;
-			}
 		}
 		
 		//registration
@@ -133,16 +109,6 @@ package cn.itamt.transform3d
 			
 			_tools = [_rTool, _tTool, _gTool];
 			
-			//tool selector bar
-			_bar = new ToolBar();
-			_tToolBtn = new TranslationToolButton();
-			_rToolBtn = new RotationToolButton();
-			_modeBtn = new TransformModeButton();
-			_bar.addToolButton(_tToolBtn);
-			_bar.addToolButton(_rToolBtn);
-			_bar.addToolButton(_modeBtn, "right");
-			addChildAt(_bar, 0);
-			
 			super();
 			
 			this.mode = _mode;
@@ -159,8 +125,6 @@ package cn.itamt.transform3d
 				tool.addEventListener(TransformEvent.UPDATE, onToolUpdate);
 				tool.addEventListener(TransformEvent.REGISTRATION, onRegistrationUpdate);
 			}
-			
-			_bar.addEventListener(MouseEvent.CLICK, onClickToolButton);
 		}
 		
 		protected override function onRemoved(evt:Event = null):void {
@@ -171,7 +135,6 @@ package cn.itamt.transform3d
 				tool.removeEventListener(TransformEvent.REGISTRATION, onRegistrationUpdate);
 			}
 			
-			_bar.removeEventListener(MouseEvent.CLICK, onClickToolButton);
 		}
 		
 		protected function onToolUpdate(evt:Event):void {
@@ -182,12 +145,7 @@ package cn.itamt.transform3d
 				}
 			}
 			
-			if(_target){
-				var rect:Rectangle = _target.getBounds(this);
-				_bar.x = rect.x;
-				_bar.y = rect.bottom;
-				_bar.width = rect.width;
-			}
+			dispatchEvent(new TransformEvent(TransformEvent.UPDATE, true, true));
 		}
 		
 		protected function onRegistrationUpdate(evt:Event):void {
@@ -197,35 +155,10 @@ package cn.itamt.transform3d
 					tool.registration = curTool.registration;
 				}
 			}
+			
+			dispatchEvent(new TransformEvent(TransformEvent.REGISTRATION, true, true));
 		}
 		
-		protected function onClickToolButton(evt:MouseEvent):void {
-			if (evt.target is ToolButton) {
-				switch(evt.target) {
-					case _modeBtn:
-						if (_modeBtn.active) {
-							mode = Transform3DMode.INTERNAL;
-						}else {
-							mode = Transform3DMode.GLOBAL;
-						}
-						break;
-					case _tToolBtn:
-						if (_tToolBtn.active) {
-							tool = "rotation";
-						}else {
-							tool = "translation";
-						}
-						break;
-					case _rToolBtn:
-						if (_rToolBtn.active) {
-							tool = "translation";
-						}else {
-							tool = "rotation";
-						}
-						break;
-				}
-			}
-		}
 		
 		//------------------------------------
 		//-----------public functions---------

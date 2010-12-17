@@ -1,4 +1,8 @@
 package {
+	import cn.itamt.transform3d.consts.Transform3DMode;
+	import cn.itamt.transform3d.toolbar.ToolBar;
+	import cn.itamt.transform3d.toolbar.ToolButton;
+	
 	import cn.itamt.transform3d.*;
 	import cn.itamt.transform3d.controls.*;
 	import cn.itamt.transform3d.controls.rotation.*;
@@ -11,11 +15,7 @@ package {
 	import flash.display.*;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-	import flash.geom.Matrix3D;
-	import flash.geom.PerspectiveProjection;
-	import flash.geom.Point;
-	import flash.geom.Utils3D;
-	import flash.geom.Vector3D;
+	import flash.geom.*;
 	import flash.text.TextField;
 	import net.badimon.five3D.display.Scene3D;
 	import net.badimon.five3D.display.Shape3D;
@@ -26,11 +26,12 @@ package {
 	import fl.controls.Slider;
 	
 	/**
-	 * ...
+	 * Transform3DTool demo. Useage example of Transform3DTool.
 	 * @author tamt
 	 */
 	public class Tfm3DToolDemo extends Sprite 
 	{
+		//instances on Flash IDE
 		public var test:MovieClip;
 		public var showFullControl_cb:CheckBox;
 		public var showOutCircle_cb:CheckBox;
@@ -44,6 +45,13 @@ package {
 		public var arrow_w_sd:Slider;
 		public var arrow_h_sd:Slider;
 		
+		//tool selector bar
+		protected var _tToolBtn:ToolButton;
+		protected var _rToolBtn:ToolButton;
+		protected var _modeBtn:ToolButton;
+		private var _bar:ToolBar;
+		
+		//
 		private var tool3d:Transform3DTool
 		
 		public function Tfm3DToolDemo():void 
@@ -54,6 +62,16 @@ package {
 			test.rotationY = 20;
 			test.mc1.mc2.rotationY = -60;
 			test.mc1.mc3.rotationZ = 20;
+			
+			//tool selector bar
+			_bar = new ToolBar();
+			_tToolBtn = new TranslationToolButton();
+			_rToolBtn = new RotationToolButton();
+			_modeBtn = new TransformModeButton();
+			_bar.addToolButton(_tToolBtn);
+			_bar.addToolButton(_rToolBtn);
+			_bar.addToolButton(_modeBtn, "right");
+			addChild(_bar);
 			
 			init();
 		}
@@ -68,12 +86,10 @@ package {
 			tool3d.rotationTool.yCursor = new YControlCursor();
 			tool3d.rotationTool.zCursor = new ZControlCursor();
 			tool3d.rotationTool.pCursor = new PControlCursor();
-						
 			tool3d.translationTool.xCursor = new XControlCursor();
 			tool3d.translationTool.regCursor = new RegistrationControlCursor();
 			tool3d.translationTool.yCursor = new YControlCursor();
 			tool3d.translationTool.zCursor = new ZControlCursor();
-			
 			tool3d.globalTranslationTool.cursor = new GlobalTranslationCursor();
 			
 			//set target.
@@ -83,6 +99,7 @@ package {
 			showFullControl_cb.addEventListener(Event.CHANGE, onConfigValueChange);
 			showOutCircle_cb.addEventListener(Event.CHANGE, onConfigValueChange);
 			
+			//set config controls value
 			this.showOutCircle_cb.selected = tool3d.rotationTool.showOutCircle;
 			this.radius_sd.value = tool3d.rotationTool.radius;
 			this.size_sd.value = tool3d.translationTool.size;
@@ -106,17 +123,77 @@ package {
 			arrow_w_sd.addEventListener(Event.CHANGE, onConfigValueChange);
 			arrow_h_sd.addEventListener(Event.CHANGE, onConfigValueChange);
 			
+			//listen tool update
+			tool3d.addEventListener(TransformEvent.UPDATE, onToolUpdate);
+			
+			//set up select bar tool buttons
+			_tToolBtn.active = (tool3d.tool == "translation");
+			_rToolBtn.active = (tool3d.tool == "rotation");
+			_modeBtn.active = (tool3d.mode == Transform3DMode.GLOBAL);
+			onToolUpdate();
+			
+			//listen bar select tool
+			_bar.addEventListener(MouseEvent.CLICK, onClickToolButton);
+			
 			//listen select target
 			this.stage.addEventListener(MouseEvent.MOUSE_DOWN, onClickSth);
 		}
 		
 		private function onClickSth(evt:MouseEvent):void {
-			
 			if(tool3d){
 				if ((evt.target == test) || test.contains(evt.target as DisplayObject)) {
 					tool3d.target = evt.target as DisplayObject;
 				}else if (evt.target is Stage) {
 					tool3d.target = null;
+				}
+				
+				if(tool3d.target){
+					var rect:Rectangle = tool3d.target.getBounds(this);
+					_bar.x = rect.x;
+					_bar.y = rect.bottom;
+					_bar.width = rect.width;
+					if (!_bar.visible)_bar.visible = true;
+				}else {
+					_bar.visible = false;
+				}
+
+			}
+		}
+		
+		protected function onClickToolButton(evt:MouseEvent):void {
+			if (evt.target is ToolButton) {
+				switch(evt.target) {
+					case _modeBtn:
+						if (_modeBtn.active) {
+							this.tool3d.mode = Transform3DMode.INTERNAL;
+							_modeBtn.active = false;
+						}else {
+							this.tool3d.mode = Transform3DMode.GLOBAL;
+							_modeBtn.active = true;
+						}
+						break;
+					case _tToolBtn:
+						if (_tToolBtn.active) {
+							this.tool3d.tool = "rotation";
+							_tToolBtn.active = false;
+							_rToolBtn.active = true;
+						}else {
+							this.tool3d.tool = "translation";
+							_tToolBtn.active = true;
+							_rToolBtn.active = false;
+						}
+						break;
+					case _rToolBtn:
+						if (_rToolBtn.active) {
+							this.tool3d.tool = "translation";
+							_rToolBtn.active = false;
+							_tToolBtn.active = true;
+						}else {
+							this.tool3d.tool = "rotation";
+							_rToolBtn.active = true;
+							_tToolBtn.active = false;
+						}
+						break;
 				}
 			}
 		}
@@ -158,6 +235,13 @@ package {
 					tool3d.translationTool.arrowSize = new Point(tool3d.translationTool.arrowSize.x, this.arrow_h_sd.value);
 					break;
 			}
+		}
+		
+		protected function onToolUpdate(evt:Event = null):void {
+			var rect:Rectangle = tool3d.target.getBounds(this);
+			_bar.x = rect.x;
+			_bar.y = rect.bottom;
+			_bar.width = rect.width;
 		}
 	}
 	
