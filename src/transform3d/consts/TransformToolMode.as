@@ -1,7 +1,7 @@
 package transform3d.consts 
 {
 	/**
-	 * ...
+	 * transform's tool mode.
 	 * @author tamt
 	 */
 	public class TransformToolMode
@@ -9,9 +9,10 @@ package transform3d.consts
 		public static const ALL:String = "all";
 		public static const ROTATION:String = "rotation";
 		public static const TRANSLATION:String = "translation";
+		public static const GLOBAL_TRANSLATION:String = "global translation";
 		
 		public static function isInvalidMode(mode:String):Boolean {
-			return !(mode == ALL || mode == ROTATION || mode == TRANSLATION);
+			return !(mode == ALL || mode == ROTATION || mode == TRANSLATION || mode == GLOBAL_TRANSLATION);
 		}
 		
 	}

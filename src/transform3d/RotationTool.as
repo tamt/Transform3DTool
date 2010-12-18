@@ -175,7 +175,10 @@ package transform3d
 				
 				_canUseMask = true;
 				if (!_showFullControl && _target) this.applyMask();
-				if (showOutCircle && _target) this.drawOutCircle();
+				if (showOutCircle && _target) {
+					this._outCircle.visible = true;
+					this.drawOutCircle();
+				}
 			}
 			
 			this.update();

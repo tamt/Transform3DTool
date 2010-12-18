@@ -79,6 +79,9 @@ package transform3d
 			}else if (_tool == TransformToolMode.ALL) {
 				if (!this.contains(_tTool)) addChild(_tTool);
 				if (!this.contains(_rTool)) addChild(_rTool);
+			}else {
+				if (this.contains(_tTool)) removeChild(_tTool);
+				if (this.contains(_rTool)) removeChild(_rTool);
 			}
 		}
 		
@@ -170,14 +173,14 @@ package transform3d
 		//---------------------------------
 		public function Transform3DTool() 
 		{
+			_gTool = new  GlobalTranslationTool();
+			addChild(_gTool);
+			
 			_rTool = new RotationTool();
 			addChild(_rTool);
 			
 			_tTool = new TranslationTool();
 			addChild(_tTool);
-			
-			_gTool = new  GlobalTranslationTool();
-			addChild(_gTool);
 			
 			_tools = [_rTool, _tTool, _gTool];
 			
@@ -191,6 +194,7 @@ package transform3d
 		protected override function onAdded(evt:Event = null):void {
 			super.onAdded(evt);
 			
+			//init custom mouse cursor.
 			CustomMouseCursor.init(this.stage);
 			
 			for each(var tool:TransformControl in _tools) {
@@ -239,7 +243,7 @@ package transform3d
 		public function update(concatenatedMX:Matrix3D = null, controlMX:Matrix3D = null, deltaMX:Matrix3D = null, outReg:Vector3D = null):void {
 			if (tool == "rotation" || tool == "all") _rTool.update(concatenatedMX, controlMX, deltaMX, outReg);
 			if (tool == "translation" || tool == "all")_tTool.update(concatenatedMX, controlMX, deltaMX, outReg);
-			_gTool.update(concatenatedMX, controlMX, deltaMX, outReg);
+			_gTool.update(concatenatedMX, controlMX, deltaMX, outReg)
 		}
 		
 		/**

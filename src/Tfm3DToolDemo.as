@@ -193,8 +193,7 @@ package {
 				}else if(_rToolBtn.active){
 					tool3d.tool = TransformToolMode.ROTATION;
 				}else{
-					tool3d.tool = TransformToolMode.ROTATION;
-					_rToolBtn.active = true;
+					tool3d.tool = TransformToolMode.GLOBAL_TRANSLATION;
 				}
 			}
 		}
@@ -218,7 +217,7 @@ package {
 					tool3d.regCtrlStyle = new Style(this.reg_cp.selectedColor, 1, 0, 1, 1);
 					break;
 				case this.rect_cp:
-					tool3d.globalTranslationTool.ctrl.style = new Style(0, 0, this.rect_cp.selectedColor, 1, 1);
+					tool3d.globalTranslationTool.ctrlStyle = new Style(0, 0, this.rect_cp.selectedColor, 1, 1);
 					break;
 				case this.showFullControl_cb:
 					tool3d.rotationTool.showFullControl = this.showFullControl_cb.selected;

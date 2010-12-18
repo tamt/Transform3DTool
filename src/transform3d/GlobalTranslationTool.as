@@ -1,6 +1,7 @@
 package transform3d 
 {
 	import transform3d.controls.DimentionControl;
+	import transform3d.controls.Style;
 	import transform3d.controls.TransformControl;
 	import transform3d.controls.translation.GlobalTranslationControl;
 	import transform3d.util.Util;
@@ -20,6 +21,17 @@ package transform3d
 		protected var _gCtrl:GlobalTranslationControl;
 		public function get ctrl():GlobalTranslationControl {
 			return _gCtrl;
+		}
+		
+		protected var _ctrlStyle:Style = new Style(0, NaN, 0x0066ff, 1, 1);
+		public function get ctrlStyle():Style {
+			return _ctrlStyle;
+		}
+		public function set ctrlStyle(val:Style):void {
+			_ctrlStyle = val;
+			if (_inited) {
+				_gCtrl.style = _ctrlStyle;
+			}
 		}
 		
 		//mouse cursor
@@ -57,6 +69,8 @@ package transform3d
 		
 		protected override function onAdded(evt:Event = null):void {
 			_gCtrl = new GlobalTranslationControl();
+			_gCtrl.style = _ctrlStyle;
+			//_gCtrl.mouseEnabled = _gCtrl.mouseChildren = false;
 			_ctrls = [_gCtrl];
 			
 			if(cursor)_gCtrl.setCursor(cursor);
