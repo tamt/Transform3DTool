@@ -98,7 +98,10 @@ package transform3d
 			_gTool.target = _target;
 		}
 		
-		//registration
+		//-----------------------------
+		//--------registration---------
+		//-----------------------------
+		//target's registration relatie to Stage
 		protected var _reg:Point;
 		public function get registration():Point {
 			return _reg;
@@ -108,6 +111,18 @@ package transform3d
 			_rTool.registration = _reg;
 			_tTool.registration = _reg;
 			_gTool.registration = _reg;
+		}
+		//target's registration
+		protected var _innerReg:Vector3D;
+		public function get innerReg():Vector3D {
+			return _innerReg;
+		}
+		public function set innerReg(val:Vector3D):void {
+			_innerReg = val.clone();
+			
+			_rTool.innerReg = _innerReg;
+			_tTool.innerReg = _innerReg;
+			_gTool.innerReg = _innerReg;
 		}
 		
 		//--------------------------------
@@ -217,7 +232,7 @@ package transform3d
 			var curTool:TransformControl = evt.target as TransformControl;
 			for each(var tool:TransformControl in _tools) {
 				if (tool != curTool) {
-					tool.update(curTool.concatenatedMX, curTool.controlMX, curTool.deltaMX, curTool.outReg);
+					tool.update(curTool.concatenatedMX, curTool.controlMX, curTool.deltaMX);
 				}
 			}
 			
@@ -231,6 +246,7 @@ package transform3d
 					tool.registration = curTool.registration;
 				}
 			}
+			_reg = curTool.registration.clone();
 			
 			dispatchEvent(new TransformEvent(TransformEvent.REGISTRATION, true, true));
 		}
@@ -240,10 +256,10 @@ package transform3d
 		//-----------public functions---------
 		//------------------------------------
 		
-		public function update(concatenatedMX:Matrix3D = null, controlMX:Matrix3D = null, deltaMX:Matrix3D = null, outReg:Vector3D = null):void {
-			if (tool == "rotation" || tool == "all") _rTool.update(concatenatedMX, controlMX, deltaMX, outReg);
-			if (tool == "translation" || tool == "all")_tTool.update(concatenatedMX, controlMX, deltaMX, outReg);
-			_gTool.update(concatenatedMX, controlMX, deltaMX, outReg)
+		public function update(concatenatedMX:Matrix3D = null, controlMX:Matrix3D = null, deltaMX:Matrix3D = null):void {
+			if (tool == "rotation" || tool == "all") _rTool.update(concatenatedMX, controlMX, deltaMX);
+			if (tool == "translation" || tool == "all")_tTool.update(concatenatedMX, controlMX, deltaMX);
+			_gTool.update(concatenatedMX, controlMX, deltaMX)
 		}
 		
 		/**

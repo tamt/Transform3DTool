@@ -22,7 +22,7 @@ package transform3d.controls
 		
 		function isTargetValid(target:DisplayObject):Boolean;
 		
-		function update(concatenatedMX:Matrix3D = null, controlMX:Matrix3D = null, deltaMX:Matrix3D = null, outReg:Vector3D = null):void;
+		function update(concatenatedMX:Matrix3D = null, controlMX:Matrix3D = null, deltaMX:Matrix3D = null):void;
 	}
 	
 }

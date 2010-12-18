@@ -52,10 +52,15 @@
 		protected var _ctrls:Array;
 		//target's registartion
 		protected var _innerReg:Vector3D;
-		//target's registration relative to it's parent
-		protected var _outReg:Vector3D;
-		public function get outReg():Vector3D{
-			return _outReg;
+		public function get innerReg():Vector3D {
+			return _innerReg;
+		}
+		public function set innerReg(val:Vector3D):void {
+			_innerReg = val;
+			if(_target){
+				_reg = _target.local3DToGlobal(_innerReg);
+				if (_inited) update();
+			}
 		}
 		//target's registration relatie to Stage
 		internal var _reg:Point;
@@ -65,10 +70,9 @@
 		//
 		public function set registration(pt:Point):void {
 			_reg = pt.clone();
-			if (_inited) {
+			if (_target) {
 				_innerReg = _target.globalToLocal3D(_reg);
-				_outReg = this.caculateOutterReg();
-				update();
+				if (_inited) update();
 			}
 		}
 		
@@ -151,7 +155,7 @@
 			_root.viewDistance = _target.root.transform.perspectiveProjection.focalLength;
 			
 			_concatenatedMX = this.getConcatenatedMatrix3D();
-			_originMX = this._target.transform.matrix3D.clone();
+			_originMX = this.getMatrix3D();//this._target.transform.matrix3D.clone();
 			_targetMX = _originMX.clone();
 					
 			//caculate the default registration.
@@ -159,7 +163,6 @@
 			var pt:Point = new Point(internalRect.left + internalRect.width / 2, internalRect.top + internalRect.height / 2);
 			_reg = _target.localToGlobal(pt);
 			_innerReg = _target.globalToLocal3D(_reg);				
-			_outReg = this.caculateOutterReg();
 
 			this.update();
 		}
@@ -227,12 +230,11 @@
 		//--------public functions--------
 		//--------------------------------
 		
-		public function update(concatenatedMX:Matrix3D = null, controlMX:Matrix3D = null, deltaMX:Matrix3D = null, outReg:Vector3D = null):void {
+		public function update(concatenatedMX:Matrix3D = null, controlMX:Matrix3D = null, deltaMX:Matrix3D = null):void {
 			if (_target == null) return;
 			_concatenatedMX = concatenatedMX?concatenatedMX.clone():this.getConcatenatedMatrix3D();
 			_originMX = _target.transform.matrix3D; 
 			_targetMX = _originMX.clone();
-			_outReg = outReg?outReg.clone():this.caculateOutterReg();
 			
 			interUpdate(controlMX, deltaMX);
 		}
@@ -310,7 +312,6 @@
 			if (_target == null) return;
 			_reg = new Point(stage.mouseX - _regCtrl.dragOffsetX, stage.mouseY - _regCtrl.dragOffsetY);
 			_innerReg = _target.globalToLocal3D(_reg);
-			_outReg = this.caculateOutterReg();
 			
 			this.interUpdate();
 			
@@ -399,13 +400,19 @@
 			return mx;
 		}
 		
-		protected function caculateOutterReg():Vector3D {
-			var parentMx:Matrix3D = _target.transform.getRelativeMatrix3D(_target.parent);
-			var pos:Vector3D = parentMx.transformVector(_innerReg);
-			return pos;
+		protected function getMatrix3D():Matrix3D {
+			if(this._target.transform.matrix3D){
+				return this._target.transform.matrix3D.clone();
+			}else {
+				var mx2d:Matrix = this._target.transform.matrix.clone();
+				this._target.z = 1;
+				this._target.z = 0;
+				var mx3d:Matrix3D = this._target.transform.matrix3D.clone();
+				this._target.transform.matrix = mx2d;
+				return mx3d;
+			}
 		}
-
-			
+		
 		protected function getParentConcatenatedMatrix3D(target:DisplayObject, relativeTo:DisplayObject):Matrix3D {
 			var p:DisplayObjectContainer = target.parent;
 			if (p.transform.matrix) {

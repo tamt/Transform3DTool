@@ -109,8 +109,6 @@ package transform3d
 				mx.append(parentMX);
 				_targetMX = mx.clone();
 			}
-
-			_outReg = caculateOutterReg();
 		}
 		
 	}
