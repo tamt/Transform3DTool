@@ -1,7 +1,7 @@
 package transform3d.consts
 {
 	/**
-	 * ...
+	 * transorm mode.
 	 * @author tamt
 	 */
 	public class Transform3DMode

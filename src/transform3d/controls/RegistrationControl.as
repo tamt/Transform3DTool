@@ -3,7 +3,7 @@ package transform3d.controls
 	import flash.display.Shape;
 	import flash.events.Event;
 	/**
-	 * ...
+	 * RegistrationControl, registration point control of TranslationTool/RotationTool
 	 * @author tamt
 	 */
 	public class RegistrationControl extends DimentionControl
@@ -45,8 +45,6 @@ package transform3d.controls
 		
 		protected override function onStopDrag():void {
 			super.onStopDrag();
-		}
-		
+		}	
 	}
-
 }

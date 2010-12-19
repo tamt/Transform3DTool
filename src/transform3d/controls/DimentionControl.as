@@ -28,9 +28,13 @@ package transform3d.controls
 			return _value;
 		}
 		
+		//is mouse on this control?
 		protected var _isOnMouse:Boolean = false;
+		//textfile for showing the value of this control
 		protected var _textfield:TextField;
+		//mouse cursor of this control
 		protected var _cursor:DisplayObject;
+		//
 		protected var _mousePoint:Point;
 		protected var _mousePoint3D:Point;
 		protected var _globalMousePoint:Point;
@@ -104,12 +108,14 @@ package transform3d.controls
 		{	
 			super.onAdded(e);
 			
+			//control Shape
 			if (_sp == null) {
 				_sp = new Shape3D();
 				this.addChild(_sp);
 			}
 			
 			if (_textfield == null) {
+				//create TextField to display value
 				_textfield = new TextField();
 				_textfield.autoSize = "left";
 				_textfield.mouseEnabled = _textfield.mouseWheelEnabled = _textfield.visible = false;
@@ -117,21 +123,27 @@ package transform3d.controls
 			
 			//addChild(_textfield);
 			
+			//listen mouse event.
 			this.addEventListener(MouseEvent.ROLL_OVER, onRollOver);
 			this.addEventListener(MouseEvent.ROLL_OUT, onRollOut);
 			this.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+			//listen mouse event on Stage.
 			this.stage.addEventListener(MouseEvent.MOUSE_UP, onOtherMouseUp);
 			
+			//act as "roll over" when mouse hit this control
 			if (this.hitTestPoint(this.stage.mouseX, this.stage.mouseY, true)) {
 				this.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OVER));
 			}
 			
+			//if has skin, build listeners on skin.
 			if (_skin) this.buildListenersToSkin();
 			
+			//store current mouse point
 			_mousePoint = new Point(mouseX, mouseY);
 			_mousePoint3D = _sp.mouseXY;
 			_globalMousePoint = new Point(stage.mouseX, stage.mouseY);
 			
+			//draw graphics in this control
 			this.draw();
 		}
 		
@@ -173,59 +185,84 @@ package transform3d.controls
 		//------private functions-----
 		//----------------------------
 		private function onMouseDown(evt:MouseEvent):void {
+			//start listen mouse event on stage
 			this.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 			this.stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 			
+			//sotre current position of mouse
 			this._mousePoint.x = this.mouseX;
 			this._mousePoint.y = this.mouseY;
 			this._mousePoint3D = _sp.mouseXY;
 			this._globalMousePoint.x = this.stage.mouseX;
 			this._globalMousePoint.y = this.stage.mouseY;
 			
+			//mark draging true
 			this._draging = true;
+			//store start drag point
 			this._startDragPoint = this._mousePoint.clone();
 			this._startDragPoint3D = this._mousePoint3D.clone();
 			
+			//lock mouse cursor
 			if (CustomMouseCursor.cursor == _cursor) {
 				CustomMouseCursor.lock();
 			}
 			
+			//mark control active
 			_actived = true;
 			
+			//call start drag
 			this.onStartDrag();
 			
+			//dispatch control active
 			this.dispatchEvent(new Event(Event.ACTIVATE, true));
 		}
 		
+		/**
+		 * on mouse up on Stage
+		 * @param	evt
+		 */
 		private function onMouseUp(evt:MouseEvent):void {
+			//clear listeners of mouse event on Stage
 			this.stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 			this.stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 			
+			//store the current position of mouse
 			this._mousePoint.x = this.mouseX;
 			this._mousePoint.y = this.mouseY;
 			this._mousePoint3D = _sp.mouseXY;
 			this._globalMousePoint.x = this.stage.mouseX;
 			this._globalMousePoint.y = this.stage.mouseY;
 			
+			//mark draging false
 			this._draging = false;
+			//store stop drag point
 			this._stopDragPoint = this._mousePoint.clone();
 			
+			//clear mouse cursor
 			if (!this._isOnMouse && CustomMouseCursor.cursor == _cursor) {
 				CustomMouseCursor.unlock();
 				CustomMouseCursor.clear();
 			}
 			
+			//show mouse cursor
 			if (this._isOnMouse) {
 				CustomMouseCursor.show(_cursor);
 			}
 			
+			//mark control inactive
 			_actived = false;
 			
+			//call stop drag function
 			this.onStopDrag();
 			
+			//dispatch control deactive event.
 			this.dispatchEvent(new Event(Event.DEACTIVATE, true));
 		}
 		
+		/**
+		 * on mouse up on Stage
+		 * @param	evt
+		 */
 		private function onOtherMouseUp(evt:MouseEvent):void {
 			if (evt.target == this) return;
 			if (this._isOnMouse) {
@@ -236,6 +273,10 @@ package transform3d.controls
 			}
 		}
 		
+		/**
+		 * on mouse move on Stage
+		 * @param	evt
+		 */
 		private function onMouseMove(evt:MouseEvent):void {
 			this._mousePoint.x = this.mouseX;
 			this._mousePoint.y = this.mouseY;
@@ -248,11 +289,19 @@ package transform3d.controls
 			this.dispatchEvent(new Event(Event.CHANGE, true));
 		}
 		
+		/**
+		 * on mouse roll over this control
+		 * @param	evt
+		 */
 		private function onRollOver(evt:MouseEvent = null):void {
 			this._isOnMouse = true;
 			if (_cursor && !_draging)CustomMouseCursor.show(_cursor);
 		}
 		
+		/**
+		 * on mouse roll out this control
+		 * @param	evt
+		 */
 		private function onRollOut(evt:MouseEvent = null):void {
 			this._isOnMouse = false;
 			if (CustomMouseCursor.cursor == _cursor && !_draging) {
@@ -261,6 +310,10 @@ package transform3d.controls
 			}
 		}
 		
+		/**
+		 * setup listeners on skins
+		 * @param	evt
+		 */
 		protected function buildListenersToSkin():void {
 			_skin.addEventListener(MouseEvent.ROLL_OVER, onRollSkinOver);
 			_skin.addEventListener(MouseEvent.ROLL_OUT, onRollSkinOut);
@@ -271,24 +324,40 @@ package transform3d.controls
 			}
 		}
 		
+		/**
+		 * clear listeners on skins
+		 * @param	evt
+		 */
 		protected function clearListenersToSkin():void {
 			_skin.removeEventListener(MouseEvent.ROLL_OVER, onRollSkinOver);
 			_skin.removeEventListener(MouseEvent.ROLL_OUT, onRollSkinOut);
 			_skin.removeEventListener(MouseEvent.MOUSE_DOWN, onSkinMouseDown);
 		}
 		
+		/**
+		 * on mouse roll over skin
+		 * @param	evt
+		 */
 		private function onRollSkinOver(evt:MouseEvent = null):void {
 			evt.stopImmediatePropagation();
 			evt.preventDefault();
 			this.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OVER, true));
 		}
 		
+		/**
+		 * on mouse roll out skin
+		 * @param	evt
+		 */
 		private function onRollSkinOut(evt:MouseEvent = null):void {
 			evt.stopImmediatePropagation();
 			evt.preventDefault();
 			this.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OUT, true));
 		}
 		
+		/**
+		 * on mouse down on skin
+		 * @param	evt
+		 */
 		private function onSkinMouseDown(evt:MouseEvent = null):void {
 			evt.stopImmediatePropagation();
 			evt.preventDefault();
@@ -298,20 +367,35 @@ package transform3d.controls
 		//------protected functions-----
 		//------------------------------
 		
+		/**
+		 * draw the control graphics
+		 */
 		protected function draw():void {
 		}
 		
+		/**
+		 * clear the control graphics
+		 */
 		protected function clear():void {
 			_sp.graphics3D.clear();
 		}
 		
+		/**
+		 * when user start drag the registration point
+		 */
 		protected function onStartDrag():void {
 			if(showValue)_textfield.visible = true;
 		}
 		
+		/**
+		 * when user draging the registration point
+		 */
 		protected function onDraging():void {
 		}
 		
+		/**
+		 * when user stop drag the registration point
+		 */
 		protected function onStopDrag():void {
 			_textfield.text = "";
 			_textfield.visible = false;

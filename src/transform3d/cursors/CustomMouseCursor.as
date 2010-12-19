@@ -114,6 +114,9 @@ package transform3d.cursors
 		//-----------------------------------
 		//-----------------------------------
 		
+		/**
+		 * start track mouse
+		 */
 		private static function startTrackMouse():void {			
 			if (!_tracking) {
 				_tracking = true;
@@ -125,6 +128,9 @@ package transform3d.cursors
 			}
 		}
 		
+		/**
+		 * stop track mouse
+		 */
 		private static function stopTrackMouse():void {
 			_tracking = false;
 			_stage.removeEventListener(Event.ENTER_FRAME, keepCursorOnTop);
@@ -132,6 +138,10 @@ package transform3d.cursors
 			_stage.removeEventListener(Event.MOUSE_LEAVE, onMouseLeave);
 		}
 		
+		/**
+		 * kee cursor on top of parent display list
+		 * @param	evt
+		 */
 		private static function keepCursorOnTop(evt:Event = null):void {
 			if (_cursor && _cursor.parent) {
 				if (_cursor.parent.getChildIndex(_cursor) != _cursor.parent.numChildren - 1) {
@@ -140,6 +150,10 @@ package transform3d.cursors
 			}
 		}
 		
+		/**
+		 * stick cursor to mouse
+		 * @param	evt
+		 */
 		private static function stickCursorToMouse(evt:Event = null ):void {
 			if (_cursor) {
 				_cursor.x = _stage.mouseX;
@@ -147,11 +161,19 @@ package transform3d.cursors
 			}
 		}
 		
+		/**
+		 * when mouse leave from Stage
+		 * @param	evt
+		 */
 		private static function onMouseLeave(evt:Event):void {
 			_stage.addEventListener(MouseEvent.MOUSE_MOVE, onMouseOver);
 			hide();
 		}
 		
+		/**
+		 * when mouse move over Stage
+		 * @param	evt
+		 */
 		private static function onMouseOver(evt:MouseEvent):void {
 			_stage.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseOver);
 			show();

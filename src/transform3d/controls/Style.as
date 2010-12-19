@@ -1,7 +1,7 @@
 package transform3d.controls 
 {
 	/**
-	 * style data
+	 * control style
 	 * @author tamt
 	 */
 	public class Style
@@ -14,15 +14,19 @@ package transform3d.controls
 		
 		public var borderThickness:Number;
 		
-		public function Style(fColor:uint = 0x0000ff, fAlpha:Number = NaN, bColor:uint = 0x000000, bAlpha:Number = NaN, bThickness:Number = 1) 
+		public function Style(fillColor:uint = 0x0000ff, fillAlpha:Number = NaN, borderColor:uint = 0x000000, borderAlpha:Number = NaN, borderThickness:Number = 1) 
 		{
-			this.fillColor = fColor;
-			this.fillAlpha = fAlpha;
-			this.borderColor = bColor;
-			this.borderAlpha = bAlpha;
-			this.borderThickness = bThickness;
+			this.fillColor = fillColor;
+			this.fillAlpha = fillAlpha;
+			this.borderColor = borderColor;
+			this.borderAlpha = borderAlpha;
+			this.borderThickness = borderThickness;
 		}
 		
+		/**
+		 * clone this Style
+		 * @return copied of this Style
+		 */
 		public function clone():Style {
 			return new Style(this.fillColor, this.fillAlpha, this.borderColor, this.borderAlpha, this.borderThickness);
 		}

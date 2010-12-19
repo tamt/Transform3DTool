@@ -35,8 +35,11 @@ package transform3d.controls.rotation
 			}
 		}
 		
+		//the angel when start drag
 		protected var _startAngle:Number;
+		//the angel in 3D coordinate when start drag
 		protected var _startAngle3D:Number;
+		//the registration point in Stage coordinate.
 		protected var _globalRegPoint:Point;
 		
 		//rotation in degree
@@ -44,6 +47,9 @@ package transform3d.controls.rotation
 			return _value;
 		}
 		
+		/**
+		 * set the style of this control
+		 */
 		public override function set style(val:Style):void{
 			_style = val;
 			_wedgeStyle = new Style(_style.fillColor, _style.fillAlpha);
@@ -90,6 +96,9 @@ package transform3d.controls.rotation
 			}
 		}
 		
+		/**
+		 * when user start drag the registration point
+		 */
 		override protected function onStartDrag():void {
 			super.onStartDrag();
 			
