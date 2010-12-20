@@ -19,14 +19,16 @@ package transform3d.cursors
 		private static var _cursor:DisplayObject;
 		private static var _tracking:Boolean;
 		private static var _locked:Boolean;
+		private static var _root:DisplayObjectContainer;
 		
 		private static var _stage:Stage;
 		public static function get stage():Stage {
 			return _stage;
 		}
 		
-		public static function init(stage:Stage):void {
-			_stage = stage;
+		public static function init(root:DisplayObjectContainer):void {
+			_root = root;
+			_stage = _root.stage;
 		}
 		
 		public static function get cursor():DisplayObject {
@@ -50,13 +52,13 @@ package transform3d.cursors
 				_defaultCursor = Mouse.cursor;
 				
 				if (_cursor && _cursor!=cursor) {
-					_stage.removeChild(_cursor);
+					_root.removeChild(_cursor);
 				}
 				
 				_cursor = cursor;
 				if (_cursor is InteractiveObject)(_cursor as InteractiveObject).mouseEnabled = false;
 				if (_cursor is Sprite)(_cursor as Sprite).mouseChildren = false;
-				_stage.addChild(_cursor);
+				_root.addChild(_cursor);
 				startTrackMouse();
 			}
 			

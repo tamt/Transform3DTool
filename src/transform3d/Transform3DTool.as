@@ -266,7 +266,7 @@ package transform3d
 			super.onAdded(evt);
 			
 			//init custom mouse cursor.
-			CustomMouseCursor.init(this.stage);
+			CustomMouseCursor.init(this.root as DisplayObjectContainer);
 			
 			//listen tool's udpate event and registration change event.
 			for each(var tool:TransformControl in _tools) {
