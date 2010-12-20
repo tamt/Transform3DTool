@@ -17,6 +17,9 @@ package transform3d.controls.rotation
 			style = new Style(0x0000ff, .7, 0x0000ff, .9,  1.5);
 		}
 		
+		/**
+		 * draw control graphics
+		 */
 		protected override function draw():void {
 			super.draw();
 			
@@ -26,23 +29,11 @@ package transform3d.controls.rotation
 			_sp.graphics3D.drawCircle(0, 0, _radius);
 			_sp.graphics3D.lineStyle(_style.borderThickness, _style.borderColor);
 			_sp.graphics3D.drawCircle(0, 0, _radius);
-			/*
-			if(_mode == Transform3DMode.GLOBAL){
-				_sp.graphics3D.lineStyle(_style.borderThickness, _style.borderColor);
-				_sp.graphics3D.drawCircle(0, 0, _radius);
-				_sp.graphics3D.lineStyle(4, _style.borderColor, 0);
-				_sp.graphics3D.drawCircle(0, 0, _radius);
-			}else if (_mode == Transform3DMode.INTERNAL) {
-				_sp.graphics3D.lineStyle(_style.borderThickness, _style.borderColor);
-				_sp.graphics3D.moveTo(0, 0);
-				_sp.graphics3D.lineTo(this._length, 0);
-				_sp.graphics3D.lineStyle(4, _style.borderColor, 0);
-				_sp.graphics3D.moveTo(0, 0);
-				_sp.graphics3D.lineTo(this._length, 0);
-			}
-			*/
 		}
 		
+		/**
+		 * when mouse start drag control
+		 */
 		override protected function onStartDrag():void {			
 			super.onStartDrag();
 			

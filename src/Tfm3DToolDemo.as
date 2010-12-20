@@ -74,10 +74,10 @@ package {
 			addChild(tool3d);
 			
 			//rotate the test MovieClip
-			test.rotationY = 20;
-			test.mc1.mc2.rotationY = -60;
-			test.mc1.mc2.rotationX = -20;
-			test.mc1.mc3.rotationZ = 20;
+			//test.rotationY = 20;
+			//test.mc1.mc2.rotationY = -60;
+			//test.mc1.mc2.rotationX = -20;
+			//test.mc1.mc3.rotationZ = 20;
 			
 			//create a tool selector bar
 			_bar = new ToolBar();

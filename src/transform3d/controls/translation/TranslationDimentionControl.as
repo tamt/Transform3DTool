@@ -12,8 +12,11 @@ package transform3d.controls.translation
 	 */
 	public class TranslationDimentionControl extends DimentionControl
 	{
-		
+		//arrow size of control graphics
 		protected var _arrowSize:Number = 10;
+		/**
+		 * arrow length of control graphics
+		 */
 		protected var _length:Number = 80;
 		public function get length():Number {
 			return _length;
@@ -22,10 +25,14 @@ package transform3d.controls.translation
 			_length = val;
 		}
 		
+		/**
+		 * translate value of control
+		 */
 		public function get distance():Number {
 			return _value;
 		}
 		
+		//start drag point relative to global coordinate
 		protected var _globalStartDragPoint:Point;
 		
 		public function TranslationDimentionControl() 
@@ -35,6 +42,9 @@ package transform3d.controls.translation
 			_style.borderThickness = 2;
 		}
 		
+		/**
+		 * when mouse start drag control
+		 */
 		protected override function onStartDrag():void {
 			super.onStartDrag();
 			
@@ -42,10 +52,14 @@ package transform3d.controls.translation
 			_globalStartDragPoint = new Point(root.mouseX, root.mouseY);
 		}
 		
+		/**
+		 * when mouse draging control
+		 */
 		override protected function onDraging():void {
 			var root:Sprite = InternalUtils.getScene(this);
 			_globalMousePoint = new Point(root.mouseX, root.mouseY);
 			
+			//caculate translate value
 			var pt:Point = _globalMousePoint.subtract(_globalStartDragPoint);
 			var b:Number = Math.atan2(pt.y, pt.x);
 			var a:Number = Util.projectRotationX(this.matrix) / Util.RADIAN;

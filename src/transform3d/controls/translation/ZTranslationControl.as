@@ -6,7 +6,7 @@ package transform3d.controls.translation
 	import net.badimon.five3D.display.Scene3D;
 	import net.badimon.five3D.utils.InternalUtils;
 	/**
-	 * ...
+	 * z control of translation tool
 	 * @author tamt
 	 */
 	public class ZTranslationControl extends TranslationDimentionControl
@@ -20,6 +20,9 @@ package transform3d.controls.translation
 			_style.borderColor = 0x0000ff;
 		}
 		
+		/**
+		 * draw control graphics
+		 */
 		protected override function draw():void {
 			super.draw();
 			
@@ -37,27 +40,25 @@ package transform3d.controls.translation
 				_sp.graphics3D.lineStyle(4, _style.borderColor, 0);
 				_sp.graphics3D.moveToSpace(0, 0, 0);
 				_sp.graphics3D.lineToSpace(0, 0, _length);
-				
-				//_sp.graphics3D.moveTo(0, 0);
-				//_sp.graphics3D.lineTo(0, -_length);
-				//_sp.graphics3D.lineStyle(4, _style.borderColor, 0);
-				//_sp.graphics3D.moveTo(0, 0);
-				//_sp.graphics3D.lineTo(0, -_length);
 			}
 			
 		}
 		
+		/**
+		 * when mouse draging conrol
+		 */
 		override protected function onDraging():void {
 			var root:Scene3D = InternalUtils.getScene(this);
 			_globalMousePoint = new Point(root.mouseX, root.mouseY);
 			
+			//caculate translate value
 			var pt:Point = _globalMousePoint.subtract(_globalStartDragPoint);
 			var b:Number = Math.atan2(pt.y, pt.x);
 			var a:Number = Util.projectRotationZ(this.matrix) / Util.RADIAN;
 			var a:Number = a - b;
 			_value = Math.cos(a)*(Math.sqrt(pt.x * pt.x + pt.y * pt.y));
 			
-			//显示度数
+			//update textfield display value if showValue is true
 			if (showValue) {
 				if (!_textfield.visible)_textfield.visible = true;
 				_textfield.text = Math.round(_value).toString();

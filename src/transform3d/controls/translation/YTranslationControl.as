@@ -6,7 +6,7 @@ package transform3d.controls.translation
 	import net.badimon.five3D.display.Scene3D;
 	import net.badimon.five3D.utils.InternalUtils;
 	/**
-	 * ...
+	 * y control of translation tool
 	 * @author tamt
 	 */
 	public class YTranslationControl extends TranslationDimentionControl
@@ -17,6 +17,9 @@ package transform3d.controls.translation
 			_style.borderColor = 0x00ff00;
 		}
 		
+		/**
+		 * draw control graphics 
+		 */
 		protected override function draw():void {
 			super.draw();
 			
@@ -40,17 +43,21 @@ package transform3d.controls.translation
 			
 		}
 		
+		/**
+		 * when mouse draging mouse
+		 */
 		override protected function onDraging():void {
 			var root:Scene3D = InternalUtils.getScene(this);
 			_globalMousePoint = new Point(root.mouseX, root.mouseY);
 			
+			//caculate translate valuf of control
 			var pt:Point = _globalMousePoint.subtract(_globalStartDragPoint);
 			var b:Number = Math.atan2(pt.y, pt.x);
 			var a:Number = Util.projectRotationY(this.matrix) / Util.RADIAN;
 			var a:Number = a - b;
 			_value = Math.cos(a)*(Math.sqrt(pt.x * pt.x + pt.y * pt.y));
 			
-			//显示度数
+			//update textfield display value if showValue is true
 			if (showValue) {
 				if (!_textfield.visible)_textfield.visible = true;
 				_textfield.text = Math.round(_value).toString();

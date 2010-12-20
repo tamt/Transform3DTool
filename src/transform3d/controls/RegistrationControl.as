@@ -8,14 +8,20 @@ package transform3d.controls
 	 */
 	public class RegistrationControl extends DimentionControl
 	{
-		
+		//radius of circle of control
 		private var _radius:Number = 5;
 		
+		/**
+		 * x offset of drag point from registration
+		 */
 		private var _dragOffsetX:Number = 0;
 		public function get dragOffsetX():Number {
 			return _dragOffsetX;
 		}
 		
+		/**
+		 * y offset of drag point from registration
+		 */
 		private var _dragOffsetY:Number = 0;
 		public function get dragOffsetY():Number {
 			return _dragOffsetY;
@@ -27,7 +33,10 @@ package transform3d.controls
 			_style.fillColor = 0xffffff;
 			_style.fillAlpha = 1;
 		}
-
+		
+		/**
+		 * draw control graphics
+		 */
 		protected override function draw():void {
 			_sp.graphics3D.clear();
 			_sp.graphics3D.lineStyle(_style.borderThickness, _style.borderColor, _style.borderAlpha);
@@ -36,13 +45,20 @@ package transform3d.controls
 			_sp.graphics3D.endFill();
 		}
 		
+		/**
+		 * when mouse start drag control
+		 */
 		protected override function onStartDrag():void {
 			super.onStartDrag();
 			
+			//store the offset of drag point from registration
 			_dragOffsetX = this.mouseX;
 			_dragOffsetY = this.mouseY;
 		}
 		
+		/**
+		 * when mouse stop drag control
+		 */
 		protected override function onStopDrag():void {
 			super.onStopDrag();
 		}	

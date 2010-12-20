@@ -8,7 +8,7 @@ package transform3d.controls.translation
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
 	/**
-	 * ...
+	 * x control of translation tool
 	 * @author tamt
 	 */
 	public class XTranslationControl extends TranslationDimentionControl
@@ -21,6 +21,9 @@ package transform3d.controls.translation
 			_arrowSize = 20;
 		}
 		
+		/**
+		 * draw control graphics
+		 */
 		protected override function draw():void {
 			super.draw();
 			
@@ -44,17 +47,21 @@ package transform3d.controls.translation
 			
 		}
 		
+		/**
+		 * when mouse draging control
+		 */
 		override protected function onDraging():void {
 			var root:Scene3D = InternalUtils.getScene(this);
 			_globalMousePoint = new Point(root.mouseX, root.mouseY);
 			
+			//calulate translate value
 			var pt:Point = _globalMousePoint.subtract(_globalStartDragPoint);
 			var b:Number = Math.atan2(pt.y, pt.x);
 			var a:Number = Util.projectRotationX(this.matrix) / Util.RADIAN;
 			var a:Number = a - b;
 			_value = Math.cos(a) * (Math.sqrt(pt.x * pt.x + pt.y * pt.y));
 			
-			//显示度数
+			//update textfield display value if showValue is true
 			if (showValue) {
 				if (!_textfield.visible)_textfield.visible = true;
 				_textfield.text = Math.round(_value).toString();
@@ -64,8 +71,12 @@ package transform3d.controls.translation
 			}
 		}
 		
+		/**
+		 * apply value matrxi3D to control
+		 */
 		public override function set matrix(value:Matrix3D):void {
 			super.matrix = value;
+			//update control graphics
 			draw();
 		}
 	}

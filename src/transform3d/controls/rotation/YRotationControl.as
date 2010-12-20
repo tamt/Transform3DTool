@@ -20,6 +20,9 @@ package transform3d.controls.rotation
 			style = new Style(0x00ff00, .7, 0x00ff00, .9,  1.5);
 		}
 		
+		/**
+		 * draw control graphics
+		 */
 		protected override function draw():void {
 			super.draw();
 			
@@ -41,6 +44,9 @@ package transform3d.controls.rotation
 			
 		}
 		
+		/**
+		 * when mouse start drag control
+		 */
 		override protected function onStartDrag():void {
 			if(_mode == Transform3DMode.GLOBAL){			
 				if (_startDragPoint.x >= 0) {
@@ -63,12 +69,17 @@ package transform3d.controls.rotation
 			}
 		}
 		
+		/**
+		 * apply value matrix to control
+		 */
 		public override function set matrix(value:Matrix3D):void {
 			var mx:Matrix3D = value.clone();
 			if(_mode == Transform3DMode.INTERNAL){
+				//rotate graphics -90 on y axis
 				mx.prependRotation(90, Vector3D.X_AXIS);
 			}
 			super.matrix = mx;
+			//redraw control graphics
 			draw();
 		}
 		

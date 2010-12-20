@@ -34,20 +34,32 @@ package transform3d.controls
 		protected var _textfield:TextField;
 		//mouse cursor of this control
 		protected var _cursor:DisplayObject;
-		//
+		//store mouse position
 		protected var _mousePoint:Point;
 		protected var _mousePoint3D:Point;
 		protected var _globalMousePoint:Point;
+		//store mouse position at when start drag
 		protected var _startDragPoint:Point;
+		//store mouse position at when start drag in 3D coordinates
 		protected var _startDragPoint3D:Point;
+		//store mouse position at when stop drag
 		protected var _stopDragPoint:Point;
+		//is control draged current?
 		protected var _draging:Boolean;
+		//is control actived curren
 		protected var _actived:Boolean;
+		/**
+		 * is control actived current.
+		 */
 		public function get actived():Boolean {
 			return _actived;
 		}
-		//
+		
+		//control graphics container
 		protected var _sp:Shape3D;
+		/**
+		 * control graphics container
+		 */
 		public function get shape():Shape3D {
 			return _sp;
 		}
@@ -56,12 +68,18 @@ package transform3d.controls
 		public function get style():Style {
 			return _style;
 		}
+		/**
+		 * the style use in control graphics drawing
+		 */
 		public function set style(val:Style):void{
 			_style = val;
+			//redraw control graphics if it is inited(displayed)
 			if (_inited) this.draw();
 		}
 		
-		//
+		/**
+		 * transform mode of control
+		 */
 		protected var _mode:uint;
 		public function get mode():uint {
 			return _mode;
@@ -71,23 +89,28 @@ package transform3d.controls
 			
 			_mode = val;
 			
-			if(_inited){
+			if (_inited) {
+				//update control graphics
 				clear();
 				draw();
 			}
 		}
 		
-		//skin
+		/**
+		 * control's skin
+		 */
 		protected var _skin:DisplayObject;
 		public function get skin():DisplayObject {
 			return _skin;
 		}
 		public function set skin(val:DisplayObject):void {
 			if (_skin) {
+				//if has skin already, clear skin listeners first
 				clearListenersToSkin();
 			}
 			_skin = val;
 			if (_skin) {
+				//build listeners on skin
 				buildListenersToSkin();
 			}
 		}
@@ -304,6 +327,7 @@ package transform3d.controls
 		 */
 		private function onRollOut(evt:MouseEvent = null):void {
 			this._isOnMouse = false;
+			//clear mouse cursor
 			if (CustomMouseCursor.cursor == _cursor && !_draging) {
 				CustomMouseCursor.unlock();
 				CustomMouseCursor.clear();
@@ -315,10 +339,12 @@ package transform3d.controls
 		 * @param	evt
 		 */
 		protected function buildListenersToSkin():void {
+			//listen skin mouse action
 			_skin.addEventListener(MouseEvent.ROLL_OVER, onRollSkinOver);
 			_skin.addEventListener(MouseEvent.ROLL_OUT, onRollSkinOut);
 			_skin.addEventListener(MouseEvent.MOUSE_DOWN, onSkinMouseDown);
 			
+			//will act like "roll over" target if mouse being on skin
 			if (_skin.hitTestPoint(this.stage.mouseX, this.stage.mouseY, true)) {
 				_skin.dispatchEvent(new MouseEvent(MouseEvent.ROLL_OVER));
 			}

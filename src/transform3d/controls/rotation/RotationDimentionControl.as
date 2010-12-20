@@ -24,13 +24,16 @@ package transform3d.controls.rotation
 		//show dimention line
 		public var showDimenLine:Boolean;
 		
+		//radius of control's circle graphics
 		protected var _radius:Number = 100;
 		public function get radius():Number {
 			return _radius;
 		}
+		//radius of control's circle graphics
 		public function set radius(val:Number):void{
 			_radius = val;
 			if (_inited) {
+				//redraw the control's graphics if control inited(displayed)
 				this.draw();
 			}
 		}
@@ -82,6 +85,9 @@ package transform3d.controls.rotation
 			super.onAdded(evt);
 		}
 		
+		/**
+		 * draw control graphics
+		 */
 		protected override function draw():void {
 			if(showDimenLine){
 				graphics3D.lineStyle(_style.borderThickness, _style.borderColor);
@@ -97,7 +103,7 @@ package transform3d.controls.rotation
 		}
 		
 		/**
-		 * when user start drag the registration point
+		 * when user start drag the control
 		 */
 		override protected function onStartDrag():void {
 			super.onStartDrag();
@@ -110,32 +116,25 @@ package transform3d.controls.rotation
 			_startAngle3D = Math.atan2(_startDragPoint3D.y, _startDragPoint3D.x)*Util.RADIAN;
 		}
 		
+		/**
+		 * when mouse draging the control
+		 */
 		override protected function onDraging():void {
+			//update mouse distance to global registration point
 			_mousePoint.x = InternalUtils.getScene(this).mouseX - _globalRegPoint.x
 			_mousePoint.y = InternalUtils.getScene(this).mouseY - _globalRegPoint.y;
 			
-			this.graphics3D.clear();
-			this.graphics3D.lineStyle(_wedgeStyle.borderThickness, _wedgeStyle.borderColor, _wedgeStyle.borderAlpha);
-			//this.graphics3D.beginFill(_wedgeStyle.fillColor, _wedgeStyle.fillAlpha*.3);
-			this.graphics3D.drawCircle(0, 0, _radius);
-			this.graphics3D.endFill();
-			
-			this.graphics3D.beginFill(_wedgeStyle.fillColor, _wedgeStyle.fillAlpha);
-			
 			//caculate the value of this control.
 			_value = Math.atan2(_mousePoint.y, _mousePoint.x) * Util.RADIAN - _startAngle;
-			
 			var showValueNum:int = int(_value);
 			if (Math.abs(showValueNum) > 180) {
+				//keep showing degree value < 180
 				if(showValueNum>0){
 					showValueNum = showValueNum - 360;
 				}else {
 					showValueNum = showValueNum + 360;
 				}
 			}
-			Util.drawWedge3D(this.graphics3D, 0, 0, this._radius, showValueNum, _startAngle3D);
-			
-			this.graphics3D.endFill();
 			
 			//update display the value degree, if showValue is true 
 			if (showValue) {
@@ -145,14 +144,34 @@ package transform3d.controls.rotation
 				_textfield.x = pos.x - _textfield.width / 2;
 				_textfield.y = pos.y - _textfield.height / 2;
 			}
+			
+			//draw circle graphics
+			this.graphics3D.clear();
+			this.graphics3D.lineStyle(_wedgeStyle.borderThickness, _wedgeStyle.borderColor, _wedgeStyle.borderAlpha);
+			//this.graphics3D.beginFill(_wedgeStyle.fillColor, _wedgeStyle.fillAlpha*.3);
+			this.graphics3D.drawCircle(0, 0, _radius);
+			this.graphics3D.endFill();
+			
+			
+			//draw wedge graphics
+			this.graphics3D.beginFill(_wedgeStyle.fillColor, _wedgeStyle.fillAlpha);
+			Util.drawWedge3D(this.graphics3D, 0, 0, this._radius, showValueNum, _startAngle3D);
+			this.graphics3D.endFill();
 		}
 		
+		/**
+		 * called when mouse stop draging
+		 */
 		override protected  function onStopDrag():void {
 			super.onStopDrag();
+			//clear control graphics
 			this.graphics3D.clear();
 			//this.draw();
 		}
 		
+		/**
+		 * dispose this control, release memory
+		 */
 		override public function dispose():void {
 			_wedgeStyle = null;
 			

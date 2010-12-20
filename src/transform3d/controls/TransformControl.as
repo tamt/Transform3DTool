@@ -137,14 +137,18 @@
 			
 			_target = dp;
 			
+			//clear control if target is null
 			if (_target == null) {
 				clear();
 				return;
 			}
 			
+			//show controls
 			if (!_root.visible)_root.visible = true;
+			//show skins
 			if (!_skinContainer.visible)_skinContainer.visible = true;
 			
+			//conver target to 3d object if it's not
 			if (_target.transform.matrix3D == null) {
 				Util.converTo3DDisplayObject(_target);
 			}
@@ -172,10 +176,12 @@
 		//--------------------------------
 
 		public function TransformControl() 
-		{	
+		{
+			//create root container of sub controls
 			_root = new Scene3D();
 			addChild(_root);
 			
+			//create skin container
 			_skinContainer = new Sprite();
 			addChildAt(_skinContainer, 0);
 			
@@ -202,7 +208,7 @@
 			if(regCursor)_regCtrl.setCursor(regCursor);
 			_root.addChild(_regCtrl);
 			_ctrls.push(_regCtrl);
-						
+			
 			//apply default mode.
 			this.mode = _mode;
 			
@@ -215,12 +221,18 @@
 			this.target = _target;
 		}
 		
+		/**
+		 * when control removed from Stage
+		 * @param	evt
+		 */
 		protected function onRemoved(evt:Event = null):void {
+			//stop listening Control events
 			this.removeEventListener(Event.ACTIVATE, onControlActived);
 			this.removeEventListener(Event.DEACTIVATE, onControlDeactived);
 			this.removeEventListener(Event.CHANGE, onChange);
-			_regCtrl.removeEventListener(Event.CHANGE, onChangeReg);
 			
+			//clear registration control
+			_regCtrl.removeEventListener(Event.CHANGE, onChangeReg);
 			_root.removeChild(_regCtrl);
 			_regCtrl.dispose();
 			_regCtrl = null;
@@ -257,7 +269,11 @@
 		//--------------------------------
 		//-------protected functions------
 		//--------------------------------
-		
+		/**
+		 * update function of control internal.
+		 * @param	controlMX
+		 * @param	deltaMX
+		 */
 		protected function interUpdate(controlMX:Matrix3D = null, deltaMX:Matrix3D = null):void {
 			if(controlMX == null){
 				var pos:Point = Util.local3DToTarget(_target, _innerReg, this); 
@@ -278,6 +294,10 @@
 			}
 		}
 		
+		/**
+		 * update controls of tool
+		 * @param	deltaMX
+		 */
 		protected function updateControls(deltaMX:Matrix3D = null):void {
 			if(deltaMX == null){
 				_deltaMx = _controlMX.clone();
@@ -299,6 +319,9 @@
 			_skinContainer.y = _root.y;
 		}
 		
+		/**
+		 * clear control, hide tools, skins.
+		 */
 		protected function clear():void {
 			_target = null;
 			_originMX = null;
@@ -308,6 +331,10 @@
 			_skinContainer.visible = false;
 		}
 		
+		/**
+		 * handler tool's registration change event
+		 * @param	evt
+		 */
 		protected function onChangeReg(evt:Event):void {
 			if (_target == null) return;
 			_reg = new Point(stage.mouseX - _regCtrl.dragOffsetX, stage.mouseY - _regCtrl.dragOffsetY);
@@ -318,6 +345,10 @@
 			this.dispatchEvent(new TransformEvent(TransformEvent.REGISTRATION));
 		}
 		
+		/**
+		 * handle tool's value change event
+		 * @param	evt
+		 */
 		private function onChange(evt:Event):void {
 			if (_target == null) return;
 			evt.stopImmediatePropagation();
@@ -336,7 +367,10 @@
 			interUpdate();
 			this.dispatchEvent(new TransformEvent(TransformEvent.UPDATE));
 		}
-		
+		/**
+		 * handler of Control active
+		 * @param	evt
+		 */
 		private function onControlActived(evt:Event):void {
 			if (_target == null) return;
 			if (!(evt.target is DimentionControl)) return;
@@ -348,6 +382,10 @@
 			this.onActiveControl(evt.target as DimentionControl);
 		}
 		
+		/**
+		 * handler of Control deactive 
+		 * @param	evt
+		 */
 		private function onControlDeactived(evt:Event):void {
 			if (_target == null) return;
 			if (!(evt.target is DimentionControl)) return;
@@ -362,10 +400,18 @@
 
 		}
 		
+		/**
+		 * when control value change
+		 * @param	ctrl
+		 */
 		protected function onChangeControlValue(ctrl:DimentionControl):void {
 			
 		}
 		
+		/**
+		 * called when control active
+		 * @param	ctrl
+		 */
 		protected function onActiveControl(ctrl:DimentionControl):void {
 			for each(var ctrl:DimentionControl in _ctrls) {
 				if (ctrl == _regCtrl) continue;
@@ -382,6 +428,10 @@
 			}
 		}
 		
+		/**
+		 * called when control deactive
+		 * @param	ctrl
+		 */
 		protected function onDeactiveControl(ctrl:DimentionControl):void {
 			for each(var ctrl:DimentionControl in _ctrls) {
 				if (ctrl == _regCtrl) continue;
@@ -389,6 +439,10 @@
 			}
 		}
 		
+		/**
+		 * get projection center of 3D space relative to control
+		 * @return
+		 */
 		protected function getProjectionCenter():Point {
 			var pt = _target.root.transform.perspectiveProjection.projectionCenter;
 			pt = this.globalToLocal(pt);
@@ -413,13 +467,24 @@
 			}
 		}
 		
+		/**
+		 * get concatenated matrix3D of target's parent.
+		 * @param	target			
+		 * @param	relativeTo		relative coordinate
+		 * @return
+		 */
 		protected function getParentConcatenatedMatrix3D(target:DisplayObject, relativeTo:DisplayObject):Matrix3D {
 			var p:DisplayObjectContainer = target.parent;
+			
+			//if target is a 2D object
 			if (p.transform.matrix) {
+				//conver it to 3D object, 
 				var mx2d:Matrix = p.transform.matrix.clone();
 				p.z = 1;
 				p.z = 0;
+				//extract its matrix3D
 				var mx3d:Matrix3D = p.transform.getRelativeMatrix3D(relativeTo);
+				//revert target to 2D object
 				p.transform.matrix = mx2d;
 				return mx3d;
 			}else {
