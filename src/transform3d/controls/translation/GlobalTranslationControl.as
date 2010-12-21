@@ -44,7 +44,6 @@ package transform3d.controls.translation
 		{
 			super();
 			_style.borderColor = 0x0066ff;
-			_style.fillAlpha = NaN;
 		}
 		
 		/**

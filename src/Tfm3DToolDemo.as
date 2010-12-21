@@ -272,7 +272,7 @@ package {
 					break;
 				case this.rect_cp:
 					//GlobalTranslationTool rectangle color change
-					tool3d.globalTranslationTool.ctrlStyle = new Style(0, 0, this.rect_cp.selectedColor, 1, 1);
+					tool3d.globalTranslationTool.ctrlStyle = new Style(0, NaN, this.rect_cp.selectedColor, 1, 1);
 					break;
 				case this.showFullControl_cb:
 					//set RotationTool show full control or not
