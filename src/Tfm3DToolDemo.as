@@ -123,11 +123,14 @@ package {
 			tool3d.translationTool.zCursor = new ZControlCursor();
 			//set the registration control's cursor of RotationTool
 			tool3d.translationTool.regCursor = new RegistrationControlCursor();
+			//set the registration control's cursor of ScaleTool
+			tool3d.scaleTool.regCursor = new RegistrationControlCursor();
 			
 			//set the global translation tool's cursor
 			tool3d.globalTranslationTool.cursor = new GlobalTranslationCursor();
 			
-			tool3d.tool = "scale";
+			//tool3d.selectTool("scale");
+			tool3d.selectTool(TransformToolMode.GLOBAL_TRANSLATION);
 			
 			//set Transform3DTool's target.
 			tool3d.target = test.mc1.mc2;
@@ -170,9 +173,9 @@ package {
 			tool3d.addEventListener(TransformEvent.UPDATE, onToolUpdate);
 			
 			//set up select bar tool buttons
-			_tToolBtn.active = (tool3d.tool == "translation");
-			_rToolBtn.active = (tool3d.tool == "rotation");
-			_sToolBtn.active = (tool3d.tool == "scale");
+			_tToolBtn.active = tool3d.toolInuse("translation");
+			_rToolBtn.active = tool3d.toolInuse("rotation");
+			_sToolBtn.active = tool3d.toolInuse("scale");
 			_modeBtn.active = (tool3d.mode == Transform3DMode.GLOBAL);
 			onToolUpdate();
 			
@@ -227,32 +230,29 @@ package {
 					case _tToolBtn:
 						//toggle TranslationTool select button active status when click TranslationToolButton
 						_tToolBtn.active = !_tToolBtn.active;
+						if (_tToolBtn.active) {
+							tool3d.selectTool(TransformToolMode.TRANSLATION);
+						}else {
+							tool3d.deselectTool(TransformToolMode.TRANSLATION);
+						}
 						break;
 					case _rToolBtn:
 						//toggle RotationTool select button active status when click TranslationToolButton
 						_rToolBtn.active = !_rToolBtn.active;
+						if (_rToolBtn.active) {
+							tool3d.selectTool(TransformToolMode.ROTATION);
+						}else {
+							tool3d.deselectTool(TransformToolMode.ROTATION);
+						}
 						break;
 					case _sToolBtn:
 						_sToolBtn.active = !_sToolBtn.active;
+						if (_sToolBtn.active) {
+							tool3d.selectTool(TransformToolMode.SCALE);
+						}else {
+							tool3d.deselectTool(TransformToolMode.SCALE);
+						}
 						break;
-				}
-				
-				
-				if (_tToolBtn.active && _rToolBtn.active && _sToolBtn.active) {
-					//if RotationTool button and TranslationTool button are all active, set Transform3DTool tool mode as "all"
-					tool3d.tool = TransformToolMode.ALL;
-				}else if (_tToolBtn.active) {
-					//if TranslationTool button is active, set Transform3DTool tool mode as "translation"
-					tool3d.tool = TransformToolMode.TRANSLATION;
-				}else if(_rToolBtn.active){
-					//if RoationTool button is active, set Transform3DTool tool mode as "rotation"
-					tool3d.tool = TransformToolMode.ROTATION;
-				}else if(_sToolBtn.active){
-					//if RoationTool button is active, set Transform3DTool tool mode as "rotation"
-					tool3d.tool = TransformToolMode.SCALE;
-				}else {
-					//if tool buttons are all inactive, set Transform3DTool tool mode as "global translation"
-					tool3d.tool = TransformToolMode.GLOBAL_TRANSLATION;
 				}
 			}
 		}

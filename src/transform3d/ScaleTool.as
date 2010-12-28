@@ -41,8 +41,8 @@ package transform3d
 			
 			_ctrls = [_tl, _tc, _tr, _l, _r, _bl, _bc, _br];
 			
-			for each(var ctrl:ScaleControl in _ctrls) {
-				ctrl.setCursor(new ScaleControlCursor());
+			for each(var ctrl:DimentionControl in _ctrls) {
+				if(ctrl is ScaleControl)ctrl.setCursor(new ScaleControlCursor());
 				_root.addChild(ctrl);
 			}
 			
@@ -250,6 +250,19 @@ package transform3d
 					_br.rotationZ = projectRotationX(_br.y);
 				}
 			}
+		}
+		
+		override public function set mode(val:uint):void {
+			if (Transform3DMode.isInvalidMode(val)) return;
+			super.mode = val;
+			
+			_root.graphics.clear();
+		}	
+		
+		override protected function clear():void {
+			super.clear();
+			
+			_root.graphics.clear();
 		}
 		
 		public function projectRotationX(val:Number):Number {

@@ -13,7 +13,7 @@ package transform3d.consts
 		public static const GLOBAL_TRANSLATION:String = "global translation";
 		
 		public static function isInvalidMode(mode:String):Boolean {
-			return !(mode == ALL || mode == ROTATION || mode == TRANSLATION || mode == GLOBAL_TRANSLATION);
+			return !(mode == ALL || mode == ROTATION || mode == TRANSLATION || mode == GLOBAL_TRANSLATION || mode == SCALE);
 		}
 		
 	}
