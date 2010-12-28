@@ -9,6 +9,7 @@ package transform3d.consts
 		public static const ALL:String = "all";
 		public static const ROTATION:String = "rotation";
 		public static const TRANSLATION:String = "translation";
+		public static const SCALE:String = "scale";
 		public static const GLOBAL_TRANSLATION:String = "global translation";
 		
 		public static function isInvalidMode(mode:String):Boolean {

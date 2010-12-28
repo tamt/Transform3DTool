@@ -37,6 +37,8 @@ package transform3d
 		private var _rTool:RotationTool;
 		//tool to transform target's translation
 		private var _tTool:TranslationTool;
+		//tool to transform target's scale
+		private var _sTool:ScaleTool;
 		//tool to transform target's translation relation Stage's coordinates
 		private var _gTool:GlobalTranslationTool;
 		
@@ -50,13 +52,16 @@ package transform3d
 			return _tTool;
 		}
 		
+		//tool to transform target's scale
+		public function get sTool():ScaleTool { return _sTool; }
+		
 		//tool to transform target's translation relation Stage's coordinates
 		public function get globalTranslationTool():GlobalTranslationTool {
 			return _gTool;
 		}
 				
 		//transform mode, will be "internal" or "global"
-		protected var _mode:uint = Transform3DMode.INTERNAL;
+		protected var _mode:uint = Transform3DMode.GLOBAL;
 		public function get mode():uint {
 			return _mode;
 		}
@@ -69,10 +74,11 @@ package transform3d
 			//set all tool's mode
 			_rTool.mode = _mode;
 			_tTool.mode = _mode;
+			_sTool.mode = _mode;
 			_gTool.mode = _mode;
 		}
 		
-		protected var _tool:String = "rotation";
+		protected var _tool:String = "scale";
 		public function get tool():String {
 			return _tool;
 		}
@@ -82,21 +88,29 @@ package transform3d
 		 * @param val		consts enum in TransformToolMode
 		 */
 		public function set tool(val:String):void {
-			if(TransformToolMode.isInvalidMode(val)) return;
+			if (TransformToolMode.isInvalidMode(val)) return;
 			
 			_tool = val;
 			if (_tool == TransformToolMode.ROTATION){
 				if (!this.contains(_rTool)) addChild(_rTool);
 				if (this.contains(_tTool)) removeChild(_tTool);
+				if (this.contains(_sTool)) removeChild(_sTool);
 			}else if (_tool == TransformToolMode.TRANSLATION) {
 				if (this.contains(_rTool)) removeChild(_rTool);
+				if (this.contains(_sTool)) removeChild(_sTool);
 				if (!this.contains(_tTool)) addChild(_tTool);
+			}else if (_tool == TransformToolMode.SCALE) {
+				if (this.contains(_rTool)) removeChild(_rTool);
+				if (this.contains(_tTool)) removeChild(_tTool);
+				if (!this.contains(_sTool)) addChild(_sTool);
 			}else if (_tool == TransformToolMode.ALL) {
 				if (!this.contains(_tTool)) addChild(_tTool);
 				if (!this.contains(_rTool)) addChild(_rTool);
+				if (!this.contains(_sTool)) addChild(_sTool);
 			}else {
 				if (this.contains(_tTool)) removeChild(_tTool);
 				if (this.contains(_rTool)) removeChild(_rTool);
+				if (this.contains(_sTool)) removeChild(_sTool);
 			}
 		}
 		
@@ -116,6 +130,7 @@ package transform3d
 			//set all tool's target
 			_rTool.target = _target;
 			_tTool.target = _target;
+			_sTool.target = _target;
 			_gTool.target = _target;
 		}
 		
@@ -136,6 +151,7 @@ package transform3d
 			_reg = pt.clone();
 			//set all tool's registration
 			_rTool.registration = _reg;
+			_sTool.registration = _reg;
 			_tTool.registration = _reg;
 			_gTool.registration = _reg;
 		}
@@ -155,6 +171,7 @@ package transform3d
 			
 			//set all tool's inner registration
 			_rTool.innerReg = _innerReg;
+			_sTool.innerReg = _innerReg;
 			_tTool.innerReg = _innerReg;
 			_gTool.innerReg = _innerReg;
 		}
@@ -225,6 +242,7 @@ package transform3d
 				//set all tool's registartion control's style
 				_rTool.regCtrlStyle = _regCtrlStyle;
 				_tTool.regCtrlStyle = _regCtrlStyle;
+				_sTool.regCtrlStyle = _regCtrlStyle;
 			}
 		}
 		
@@ -248,7 +266,10 @@ package transform3d
 			_tTool = new TranslationTool();
 			addChild(_tTool);
 			
-			_tools = [_rTool, _tTool, _gTool];
+			_sTool = new ScaleTool();
+			addChild(_sTool);
+			
+			_tools = [_rTool, _tTool, _sTool, _gTool];
 			
 			super();
 			
@@ -336,6 +357,7 @@ package transform3d
 		public function update(concatenatedMX:Matrix3D = null, controlMX:Matrix3D = null, deltaMX:Matrix3D = null):void {
 			if (tool == "rotation" || tool == "all") _rTool.update(concatenatedMX, controlMX, deltaMX);
 			if (tool == "translation" || tool == "all")_tTool.update(concatenatedMX, controlMX, deltaMX);
+			if (tool == "scale" || tool == "all")_sTool.update(concatenatedMX, controlMX, deltaMX);
 			_gTool.update(concatenatedMX, controlMX, deltaMX)
 		}
 		

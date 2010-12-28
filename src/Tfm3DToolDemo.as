@@ -59,6 +59,8 @@ package {
 		protected var _tToolBtn:ToolButton;
 		//RotationTool select button
 		protected var _rToolBtn:ToolButton;
+		//ScaleTool select button
+		private var _sToolBtn;
 		//Transform3DMode select button
 		protected var _modeBtn:ToolButton;
 		//tool bar contains tool select buttons.
@@ -85,11 +87,14 @@ package {
 			_tToolBtn = new TranslationToolButton();
 			//rotation tool button on selector bar
 			_rToolBtn = new RotationToolButton();
+			//scale tool button on selector bar
+			_sToolBtn = new ScaleToolButton();
 			//mode switch button on selector bar
 			_modeBtn = new TransformModeButton();
 			//add tool buttons to ToolBar
 			_bar.addToolButton(_tToolBtn);
 			_bar.addToolButton(_rToolBtn);
+			_bar.addToolButton(_sToolBtn);
 			//add mode button to ToolBar, align right
 			_bar.addToolButton(_modeBtn, "right");
 			addChild(_bar);
@@ -121,6 +126,8 @@ package {
 			
 			//set the global translation tool's cursor
 			tool3d.globalTranslationTool.cursor = new GlobalTranslationCursor();
+			
+			tool3d.tool = "scale";
 			
 			//set Transform3DTool's target.
 			tool3d.target = test.mc1.mc2;
@@ -165,6 +172,7 @@ package {
 			//set up select bar tool buttons
 			_tToolBtn.active = (tool3d.tool == "translation");
 			_rToolBtn.active = (tool3d.tool == "rotation");
+			_sToolBtn.active = (tool3d.tool == "scale");
 			_modeBtn.active = (tool3d.mode == Transform3DMode.GLOBAL);
 			onToolUpdate();
 			
@@ -224,10 +232,13 @@ package {
 						//toggle RotationTool select button active status when click TranslationToolButton
 						_rToolBtn.active = !_rToolBtn.active;
 						break;
+					case _sToolBtn:
+						_sToolBtn.active = !_sToolBtn.active;
+						break;
 				}
 				
 				
-				if (_tToolBtn.active && _rToolBtn.active) {
+				if (_tToolBtn.active && _rToolBtn.active && _sToolBtn.active) {
 					//if RotationTool button and TranslationTool button are all active, set Transform3DTool tool mode as "all"
 					tool3d.tool = TransformToolMode.ALL;
 				}else if (_tToolBtn.active) {
@@ -236,6 +247,9 @@ package {
 				}else if(_rToolBtn.active){
 					//if RoationTool button is active, set Transform3DTool tool mode as "rotation"
 					tool3d.tool = TransformToolMode.ROTATION;
+				}else if(_sToolBtn.active){
+					//if RoationTool button is active, set Transform3DTool tool mode as "rotation"
+					tool3d.tool = TransformToolMode.SCALE;
 				}else {
 					//if tool buttons are all inactive, set Transform3DTool tool mode as "global translation"
 					tool3d.tool = TransformToolMode.GLOBAL_TRANSLATION;
