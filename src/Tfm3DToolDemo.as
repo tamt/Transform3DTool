@@ -124,6 +124,7 @@ package {
 			//set the registration control's cursor of RotationTool
 			tool3d.translationTool.regCursor = new RegistrationControlCursor();
 			//set the registration control's cursor of ScaleTool
+			tool3d.scaleTool.cursor = new ScaleControlCursor();
 			tool3d.scaleTool.regCursor = new RegistrationControlCursor();
 			
 			//set the global translation tool's cursor

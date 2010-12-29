@@ -1,5 +1,6 @@
 package transform3d 
 {
+	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.geom.Matrix3D;
 	import flash.geom.Point;
@@ -17,6 +18,19 @@ package transform3d
 	 */
 	public class ScaleTool extends TransformControl
 	{
+		private var _cursor:DisplayObject;
+		public function get cursor():DisplayObject { return _cursor; }
+		
+		public function set cursor(value:DisplayObject):void 
+		{
+			_cursor = value;
+			if (_inited) {
+				for each(var ctrl:DimentionControl in _ctrls) {
+					if (ctrl is ScaleControl) ctrl.setCursor(_cursor);
+				}
+			}
+		}
+		
 		private var _tl:ScaleControl;
 		private var _tc:ScaleControl;
 		private var _tr:ScaleControl;
@@ -42,8 +56,8 @@ package transform3d
 			_ctrls = [_tl, _tc, _tr, _l, _r, _bl, _bc, _br];
 			
 			for each(var ctrl:DimentionControl in _ctrls) {
-				if(ctrl is ScaleControl)ctrl.setCursor(new ScaleControlCursor());
 				_root.addChild(ctrl);
+				if (ctrl is ScaleControl) ctrl.setCursor(_cursor);
 			}
 			
 			super.onAdded(evt);
