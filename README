@@ -1,4 +1,4 @@
-Transform3DToolÓÃÓÚ¶Ô3DÏÔÊ¾¶ÔÏó£¨FlashPlayer 10£©½øĞĞ±äĞÎ²Ù×÷¡£ÓĞËÄ¸öTool×é³É£ºRotationTool¡¢ScaleTool¡¢TranslationTool¡¢GlobalTranslationTool£¬¸÷¸öTool¶¼¿ÉÒÔ·Ö¿ª£¬µ¥¶ÀÔÚ´úÂëÖĞÊ¹ÓÃ¡£
-[ ÏÂÃæÊÇ±ï³öÀ´µÄÓ¢ÎÄËµÃ÷ -_-|| ]
+ï»¿Transform3DToolç”¨äºå¯¹3Dæ˜¾ç¤ºå¯¹è±¡ï¼ˆFlashPlayer 10ï¼‰è¿›è¡Œå˜å½¢æ“ä½œã€‚æœ‰å››ä¸ªToolç»„æˆï¼šRotationToolã€ScaleToolã€TranslationToolã€GlobalTranslationToolï¼Œå„ä¸ªTooléƒ½å¯ä»¥åˆ†å¼€ï¼Œå•ç‹¬åœ¨ä»£ç ä¸­ä½¿ç”¨ã€‚
+[ ä¸‹é¢æ˜¯æ†‹å‡ºæ¥çš„è‹±æ–‡è¯´æ˜ -_-|| ]
 
 Transform3DTool is a AS3 library like TransformTool, but it's for 3D DisplayObject(in FlashPlayer 10). Transform3DTool consist of four tools currently: RotationTool, ScaleTool, TranslationTool, GlobalTranslationTool. You can use them dependently in your AS3 code.
