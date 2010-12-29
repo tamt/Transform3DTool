@@ -1,0 +1,4 @@
+Transform3DTool用于对3D显示对象（FlashPlayer 10）进行变形操作。有四个Tool组成：RotationTool、ScaleTool、TranslationTool、GlobalTranslationTool，各个Tool都可以分开，单独在代码中使用。
+[ 下面是憋出来的英文说明 -_-|| ]
+
+Transform3DTool is AS3 library like TransformTool, but it's for 3D DisplayObject(in FlashPlayer 10). Transform3DTool consist of four tools currently: RotationTool, ScaleTool, TranslationTool, GlobalTranslationTool. You can use them dependently in your AS3 code.
