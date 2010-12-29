@@ -161,13 +161,17 @@
 			_concatenatedMX = this.getConcatenatedMatrix3D();
 			_originMX = this.getMatrix3D();//this._target.transform.matrix3D.clone();
 			_targetMX = _originMX.clone();
-					
-			//caculate the default registration.
-			var internalRect:Rectangle = _target.getRect(_target);
-			var pt:Point = new Point(internalRect.left + internalRect.width / 2, internalRect.top + internalRect.height / 2);
-			_reg = _target.localToGlobal(pt);
-			_innerReg = _target.globalToLocal3D(_reg);				
-
+			
+			if (_innerReg || _reg) {
+				if (_reg == null)_reg = _target.local3DToGlobal(_innerReg);
+				if (_innerReg == null)_innerReg = _target.globalToLocal3D(_reg);
+			}else{
+				//caculate the default registration.
+				var internalRect:Rectangle = _target.getRect(_target);
+				var pt:Point = new Point(internalRect.left + internalRect.width / 2, internalRect.top + internalRect.height / 2);
+				_reg = _target.localToGlobal(pt);
+				_innerReg = _target.globalToLocal3D(_reg);
+			}
 			this.update();
 		}
 		

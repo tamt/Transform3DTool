@@ -383,6 +383,7 @@ package transform3d
 			var curTool:TransformControl = evt.target as TransformControl;
 			for each(var tool:TransformControl in _tools) {
 				if (tool != curTool) {
+					//tool.innerReg = curTool.innerReg;
 					tool.registration = curTool.registration;
 				}
 			}
