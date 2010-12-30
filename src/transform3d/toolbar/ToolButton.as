@@ -11,9 +11,9 @@ package transform3d.toolbar
 	{
 		private var _active:Boolean;
 		
-		private var _originUpState:DisplayObject;
-		private var _originDownState:DisplayObject;
-		private var _originOverState:DisplayObject;
+		protected var _originUpState:DisplayObject;
+		protected var _originDownState:DisplayObject;
+		protected var _originOverState:DisplayObject;
 		
 		public function ToolButton() 
 		{
@@ -25,7 +25,7 @@ package transform3d.toolbar
 			if (_originUpState == null)_originUpState = this.upState;
 			if (_originOverState == null)_originOverState = this.overState;
 			
-			if (_active == val) return;
+			//if (_active == val) return;
 			_active = val;
 			
 			if (_active) {

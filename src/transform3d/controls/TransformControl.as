@@ -237,7 +237,7 @@
 			
 			//clear registration control
 			_regCtrl.removeEventListener(Event.CHANGE, onChangeReg);
-			_root.removeChild(_regCtrl);
+			if(_regCtrl.parent)_regCtrl.parent.removeChild(_regCtrl);
 			_regCtrl.dispose();
 			_regCtrl = null;
 		}
