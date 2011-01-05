@@ -1,5 +1,6 @@
 package transform3d.toolbar 
 {
+	import flash.display.DisplayObject;
 	import transform3d.controls.Control;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -15,10 +16,10 @@ package transform3d.toolbar
 			_width = val;
 			
 			var minW:Number = 0;
-			for each(var btn:ToolButton in _leftBtns) {
+			for each(var btn:IToolButton in _leftBtns) {
 				minW += btn.width;
 			}
-			for each(var btn:ToolButton in _rightBtns) {
+			for each(var btn:IToolButton in _rightBtns) {
 				minW += btn.width
 			}
 			minW += Math.max(0, _leftBtns.length -1) * _padding + Math.max(0, _rightBtns.length -1) * _padding;
@@ -30,8 +31,8 @@ package transform3d.toolbar
 		}
 		
 		protected var _inited:Boolean = false;
-		protected var _leftBtns:Vector.<ToolButton>;
-		protected var _rightBtns:Vector.<ToolButton>;
+		protected var _leftBtns:Vector.<IToolButton>;
+		protected var _rightBtns:Vector.<IToolButton>;
 		protected var _padding:Number = 2;
 		//-------------------------
 		//--------constructor------
@@ -40,8 +41,8 @@ package transform3d.toolbar
 		public function ToolBar() 
 		{
 			
-			_leftBtns = new Vector.<ToolButton>();
-			_rightBtns = new Vector.<ToolButton>();
+			_leftBtns = new Vector.<IToolButton>();
+			_rightBtns = new Vector.<IToolButton>();
 			
 			if (stage) onAdded();
 			else addEventListener(Event.ADDED_TO_STAGE, onInterAdded);
@@ -88,7 +89,7 @@ package transform3d.toolbar
 		//-----public functions----
 		//-------------------------
 		
-		public function addToolButton(btn:ToolButton, align:String = "left"):void {
+		public function addToolButton(btn:IToolButton, align:String = "left"):void {
 			var i:int;
 			if(align == "left"){
 				i = _leftBtns.indexOf(btn);
@@ -96,29 +97,29 @@ package transform3d.toolbar
 					_leftBtns.splice(i, 1);
 				}
 				_leftBtns.push(btn);
-				addChild(btn);
+				addChild(btn as DisplayObject);
 			}else {
 				i = _rightBtns.indexOf(btn);
 				if (i>=0) {
 					_rightBtns.splice(i, 1);
 				}
 				_rightBtns.push(btn);
-				addChild(btn);
+				addChild(btn as DisplayObject);
 			}
 			
 			onAdded();
 		}
 		
-		public function removeToolButton(btn:ToolButton):void {
+		public function removeToolButton(btn:IToolButton):void {
 			var i:int = _leftBtns.indexOf(btn);
 			if (i>=0) {
 				_leftBtns.splice(i, 1);
-				removeChild(btn);
+				removeChild(btn as DisplayObject);
 			}else {
 				i = _rightBtns.indexOf(btn);
 				if (i >= 0) {
 					_rightBtns.splice(i, 1);
-					removeChild(btn);
+					removeChild(btn as DisplayObject);
 				}
 			}
 			

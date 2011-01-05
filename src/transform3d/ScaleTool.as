@@ -9,6 +9,7 @@ package transform3d
 	import transform3d.consts.Transform3DMode;
 	import transform3d.controls.DimentionControl;
 	import transform3d.controls.scale.ScaleControl;
+	import transform3d.controls.Style;
 	import transform3d.controls.TransformControl;
 	import transform3d.util.Util;
 	
@@ -30,6 +31,43 @@ package transform3d
 				}
 			}
 		}
+		
+		private var _style:Style = new Style(0xffffff, 1, 0x000000, 1, 2);
+		
+		public function get style():Style 
+		{
+			return _style;
+		}
+		
+		public function set style(value:Style):void 
+		{
+			_style = value;
+			if (_inited) {				
+				for each(var ctrl:DimentionControl in _ctrls) {
+					if (ctrl is ScaleControl) ctrl.style = _style;
+				}
+			}
+		}
+		
+		private var _size:Number = 10;
+		
+		public function get size():Number 
+		{
+			return _size;
+		}
+		
+		public function set size(value:Number):void 
+		{
+			_size = value;
+			if (_inited) {				
+				for each(var ctrl:DimentionControl in _ctrls) {
+					if (ctrl is ScaleControl) {
+						(ctrl as ScaleControl).size = _size;
+					}
+				}
+			}
+		}
+		
 		
 		private var _tl:ScaleControl;
 		private var _tc:ScaleControl;
@@ -57,7 +95,11 @@ package transform3d
 			
 			for each(var ctrl:DimentionControl in _ctrls) {
 				_root.addChild(ctrl);
-				if (ctrl is ScaleControl) ctrl.setCursor(_cursor);
+				if (ctrl is ScaleControl) {
+					ctrl.setCursor(_cursor);
+					ctrl.style = _style;
+					(ctrl as ScaleControl).size = _size;
+				}
 			}
 			
 			super.onAdded(evt);
@@ -140,10 +182,7 @@ package transform3d
 				parentMX.invert();
 				mx.append(parentMX);
 				_targetMX = mx.clone();
-			}else if (mode == Transform3DMode.INTERNAL) {
-		
-				_targetMX.prependTranslation(_innerReg.x, _innerReg.y, _innerReg.z);
-				
+			}else if (mode == Transform3DMode.INTERNAL) {				
 				var directionX:int = 1;
 				var directionY:int = 1;
 				switch(scaleCtrl) {
@@ -180,7 +219,7 @@ package transform3d
 				
 				if (xvalue == -1) xvalue = -0.999;
 				if (yvalue == -1) yvalue = -0.999;
-				_targetMX.prependTranslation( -_innerReg.x, -_innerReg.y, -_innerReg.z);
+				_targetMX.prependTranslation(_innerReg.x, _innerReg.y, _innerReg.z);
 				_targetMX.prependScale(1 + xvalue, 1 + yvalue, 1);
 				_targetMX.prependTranslation( -_innerReg.x, -_innerReg.y, -_innerReg.z);
 			}

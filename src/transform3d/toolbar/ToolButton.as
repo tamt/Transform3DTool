@@ -7,7 +7,7 @@ package transform3d.toolbar
 	 * a simle custom ToolButton.
 	 * @author tamt
 	 */
-	public class ToolButton extends SimpleButton
+	public class ToolButton extends SimpleButton implements IToolButton
 	{
 		private var _active:Boolean;
 		
