@@ -140,10 +140,7 @@ package transform3d
 				parentMX.invert();
 				mx.append(parentMX);
 				_targetMX = mx.clone();
-			}else if (mode == Transform3DMode.INTERNAL) {
-		
-				_targetMX.prependTranslation(_innerReg.x, _innerReg.y, _innerReg.z);
-				
+			}else if (mode == Transform3DMode.INTERNAL) {				
 				var directionX:int = 1;
 				var directionY:int = 1;
 				switch(scaleCtrl) {
@@ -180,7 +177,7 @@ package transform3d
 				
 				if (xvalue == -1) xvalue = -0.999;
 				if (yvalue == -1) yvalue = -0.999;
-				_targetMX.prependTranslation( -_innerReg.x, -_innerReg.y, -_innerReg.z);
+				_targetMX.prependTranslation(_innerReg.x, _innerReg.y, _innerReg.z);
 				_targetMX.prependScale(1 + xvalue, 1 + yvalue, 1);
 				_targetMX.prependTranslation( -_innerReg.x, -_innerReg.y, -_innerReg.z);
 			}

@@ -71,6 +71,9 @@ package {
 		
 		public function Tfm3DToolDemo():void 
 		{
+			//create a Transform3DTool instance
+			tool3d = new Transform3DTool();
+			addChild(tool3d);
 			
 			//rotate the test MovieClip
 			test.rotationY = 20;
@@ -103,6 +106,29 @@ package {
 		private function init(e:Event = null):void 
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
+			
+			//setup tool3d cursors
+			//set the x/y/z control's cursor of RotationTool
+			tool3d.rotationTool.xCursor = new XControlCursor();
+			tool3d.rotationTool.yCursor = new YControlCursor();
+			tool3d.rotationTool.zCursor = new ZControlCursor();
+			//set the registration control's cursor of RotationTool
+			tool3d.rotationTool.regCursor = new RegistrationControlCursor();
+			//set the perspective rotation control's cursor of RotationTool
+			tool3d.rotationTool.pCursor = new PControlCursor();
+			
+			//set the x/y/z control's cursor of TranslationTool
+			tool3d.translationTool.xCursor = new XControlCursor();
+			tool3d.translationTool.yCursor = new YControlCursor();
+			tool3d.translationTool.zCursor = new ZControlCursor();
+			//set the registration control's cursor of RotationTool
+			tool3d.translationTool.regCursor = new RegistrationControlCursor();
+			//set the registration control's cursor of ScaleTool
+			tool3d.scaleTool.cursor = new ScaleControlCursor();
+			tool3d.scaleTool.regCursor = new RegistrationControlCursor();
+			
+			//set the global translation tool's cursor
+			tool3d.globalTranslationTool.cursor = new GlobalTranslationCursor();
 			
 			//tool3d.selectTool("scale");
 			tool3d.selectTool(TransformToolMode.GLOBAL_TRANSLATION);
