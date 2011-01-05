@@ -5,7 +5,7 @@ package transform3d.controls.scale
 	import transform3d.controls.Style;
 	
 	/**
-	 * ...
+	 * 
 	 * @author tamt
 	 */
 	public class ScaleControl extends DimentionControl
@@ -31,8 +31,8 @@ package transform3d.controls.scale
 			_sp.graphics3D.clear();
 			_sp.graphics3D.lineStyle(_style.borderThickness, _style.borderColor, _style.borderAlpha);
 			_sp.graphics3D.beginFill(_style.fillColor, _style.fillAlpha);
-			//_sp.graphics3D.drawRect(-_size/2, -_size/2, _size, _size);
-			_sp.graphics3D.drawCircle(0, 0, _size / 2);
+			_sp.graphics3D.drawRect(-_size/2, -_size/2, _size, _size);
+			//_sp.graphics3D.drawCircle(0, 0, _size / 2);
 			_sp.graphics3D.endFill();
 			
 		}
