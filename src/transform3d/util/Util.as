@@ -211,6 +211,22 @@ package transform3d.util
 			//}
 		}
 		
+		public static function convertMX3DtoMX(mx3d:Matrix3D):Matrix {
+			var raw:Vector.<Number> = mx3d.rawData;
+			
+			var a:Number = raw[0];
+			var b:Number = raw[1];
+
+			var c:Number = raw[4];
+			var d:Number = raw[5];
+
+			var tx:Number = raw[12];
+			var ty:Number = raw[13];
+
+			return new Matrix(a,b,c,d,tx,ty);
+
+		}
+		
 	}
 
 }
