@@ -240,7 +240,7 @@ package transform3d
 		{
 			_showPRotateCtrl = value;
 			if (_inited) {
-				if(_root.contains(_pCtrl))_root.removeChild(_showPRotateCtrl);
+				if(_root.contains(_pCtrl))_root.removeChild(_pCtrl);
 			}
 		}
 		
