@@ -77,7 +77,7 @@ package transform3d.toolbar
 			
 			for (i = 0; i < _rightBtns.length; i++) {
 				_rightBtns[i].y = _padding;
-				_rightBtns[i].x = _width + (i > 0?(_rightBtns[i - 1].x -_padding):0) - _rightBtns[i].width;
+				_rightBtns[i].x = (i > 0?(_rightBtns[i - 1].x -_padding):_width) - _rightBtns[i].width;
 			}
 		}
 		

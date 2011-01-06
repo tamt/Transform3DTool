@@ -231,6 +231,18 @@ package transform3d
 			}
 		}
 		
+		//------------------------------
+		//----on added on stage---------
+		//------------------------------
+		protected var _showPRotateCtrl:Boolean = true;
+		public function get showPRotateCtrl():Boolean { return _showPRotateCtrl; }
+		public function set showPRotateCtrl(value:Boolean):void 
+		{
+			_showPRotateCtrl = value;
+			if (_inited) {
+				if(_root.contains(_pCtrl))_root.removeChild(_showPRotateCtrl);
+			}
+		}
 		
 		//------------------------------
 		//----on added on stage---------
@@ -263,7 +275,7 @@ package transform3d
 			_root.addChild(_xCtrl);
 			_root.addChild(_yCtrl);
 			_root.addChild(_zCtrl);
-			_root.addChild(_pCtrl);
+			if(_showPRotateCtrl)_root.addChild(_pCtrl);
 			
 			//--------------------------------------------
 			//-----for half circle control effect---------
@@ -315,7 +327,7 @@ package transform3d
 			_root.removeChild(_xCtrl);
 			_root.removeChild(_yCtrl);
 			_root.removeChild(_zCtrl);
-			_root.removeChild(_pCtrl);
+			if(_root.contains(_pCtrl))_root.removeChild(_pCtrl);
 			
 			_xCtrl.dispose();
 			_yCtrl.dispose();

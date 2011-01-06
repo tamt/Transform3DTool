@@ -403,7 +403,7 @@ package transform3d.controls
 		 * clear the control graphics
 		 */
 		protected function clear():void {
-			_sp.graphics3D.clear();
+			if(_sp)_sp.graphics3D.clear();
 		}
 		
 		/**
